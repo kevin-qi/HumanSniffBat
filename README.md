@@ -12,4 +12,20 @@ Task 2 - Individual flight task (B149f)
 
 Task 3 - Group behavior task (B149b)
 
+Each task requires a different set of tools to collect and analyze the data. Ultimately, the findings from these three tasks will be synthesized to report findings of the extent to which the human experimenter is represented in the bat's brain. 
 
+Three types of data are necessary to make conclusions about neural data from CA1:
+
+1. Positional Data (Bat)
+
+2. Positional Data (Human)
+
+3. Neural Data (Bat)
+
+Accessory data are useful for further refining and examining behaviors in the tasks
+
+1. Audio Data (trills, human noises)
+
+2. Close-up Video (sniffing, body position)
+
+3. 
