@@ -28,4 +28,8 @@ Accessory data are useful for further refining and examining behaviors in the ta
 
 2. Close-up Video (sniffing, body position)
 
-3. 
+Behaviors that we hope to observe and quantify, but not yet robustly quantified:
+
+1. Hovering (tracking of human)
+
+2. Sniffing (time-delayed)
