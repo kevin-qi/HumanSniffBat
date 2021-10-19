@@ -36,4 +36,8 @@ Behaviors that we hope to observe and quantify, but not yet robustly quantified:
 
 2. Sniffing (time-delayed)
 
+Hypothesis Chart for Setup 2 in B149f
+
+<img width="537" alt="Screen Shot 2021-10-19 at 3 34 45 PM" src="https://user-images.githubusercontent.com/9907501/137999971-5ce54c5c-9bfe-4243-b4a5-38a49ee684a8.png">
+
 
