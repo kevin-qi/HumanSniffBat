@@ -1,2 +1,5 @@
 data/**/*
 .ipynb_checkpoints
+utils/LoggerDataProcessing
+utils/q-bats
+utils/yolov5
