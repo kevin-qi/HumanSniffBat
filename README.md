@@ -40,4 +40,21 @@ Hypothesis Chart for Setup 2 in B149f
 
 <img width="537" alt="Screen Shot 2021-10-19 at 3 34 45 PM" src="https://user-images.githubusercontent.com/9907501/137999971-5ce54c5c-9bfe-4243-b4a5-38a49ee684a8.png">
 
+# Setup
+```python
+1. git clone # Clone the repository
+2. cd humanbat
+3. conda env create -f environment.yml # Install conda env
+4. conda activate bathuman # Activate installed env
+5. Install LoggerDataProcessing in utils/
+6. Install q-bats in utils/
+5. python setup.py # Run the python configuration script
+6. Install matlab engine for python:
+    - cd <matlabroot>\extern\engines\python 
+        # replace <matlabroot> with your path to matlab
+        # (e.g. C:\Program Files\MATLAB\R2021b)
+    - python setup.py install
+    - For more details, see: https://www.mathworks.com/help/matlab/matlab_external/install-the-matlab-engine-for-python.html
+```
+
 
