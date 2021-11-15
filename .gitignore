@@ -6,5 +6,5 @@ HumanBat/yolov5
 HumanBat/datasets
 HumanBat/data_monitor
 */__pycache__
-
+__pycache__
 .egg-info
