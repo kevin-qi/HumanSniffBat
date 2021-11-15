@@ -1,5 +1,10 @@
 data/**/*
 .ipynb_checkpoints
-utils/LoggerDataProcessing
-utils/q-bats
-utils/yolov5
+HumanBat/LoggerDataProcessing
+HumanBat/q-bats
+HumanBat/yolov5
+HumanBat/datasets
+HumanBat/data_monitor
+*/__pycache__
+
+.egg-info
