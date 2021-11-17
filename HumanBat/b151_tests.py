@@ -57,28 +57,32 @@ def visualize_synchrony(motu_path, arduino_path, ephys_path, camera_path, out_pa
     fps = 50
     T = 1/fps
     frame_step_size = 10
-    shift = 5 #sec
+    shift = 2 #sec
     delta_t = frame_step_size*T
 
     motu_step_size = T * motu_fs
     ms_step_size = T * 1000
 
     last_ready_enter_index = np.where(state_history == 'READY')[0][-1]
-    t0_ms = arduino_data['state_enter_ms'][last_ready_enter_index] - shift*1000 # ms
+    t0_ms = int(arduino_data['corrected_state_enter_ms'][last_ready_enter_index] - shift*1000) # ms
 
-    duration = 90000 # ms
+    duration = 75000 # ms
     states = arduino_data['state'][last_ready_enter_index:]
-    state_duration = np.diff(np.hstack([arduino_data['state_enter_ms'][last_ready_enter_index:]]))
+    state_duration = np.diff(np.hstack([arduino_data['corrected_state_enter_ms'][last_ready_enter_index:]]))
     state_waveform = []
     for i in range(len(states)-1):
-        state_waveform += (state_duration[i]*int(motu_fs/1000))*[state_mapping[states[i]]]
+        state_waveform += (int(state_duration[i])*int(motu_fs/1000))*[state_mapping[states[i]]]
     state_waveform = np.array(state_waveform)[:duration*int(motu_fs/1000)]
     state_waveform = np.hstack([[0]*shift*motu_fs,state_waveform])
     duration = np.min([len(state_waveform), duration*int(motu_fs/1000)])
 
 
+
     t0_motu = t0_ms*int(motu_fs/1000)
     t0_camera = int(t0_ms*(fps/1000))
+    print(t0_camera)
+    print(t0_motu)
+    print(t0_ms)
 
     fourcc = cv2.VideoWriter_fourcc('m', 'p', '4', 'v')
     writer = cv2.VideoWriter(out_path,fourcc,fps = int(fps/frame_step_size), frameSize=(1200, 800))
@@ -100,7 +104,6 @@ def visualize_synchrony(motu_path, arduino_path, ephys_path, camera_path, out_pa
     ax8 = plt.subplot(2,3,5)
     vid_axs = [ax5,ax6,ax7,ax8]
     im_axs = {}
-
     ax1.plot(np.abs(event_motu[t0_motu:t0_motu+duration]))
     ax2.plot(state_waveform)
     ax1_vline = ax1.axvline(0, 0,1, color='red')
@@ -115,10 +118,13 @@ def visualize_synchrony(motu_path, arduino_path, ephys_path, camera_path, out_pa
     for i in range(int(duration*(1/motu_fs)*50)):
         frames = {}
         for camera in caps.keys():
+            #print(camera)
             ret, frames[camera] = caps[camera].read()
+            #print(frames[camera].shape)
 
         if(i%frame_step_size == 0):
-            print(i)
+            if i%(frame_step_size*10) == 0:
+                print(i)
 
             j = 0
             for key in frames.keys():
