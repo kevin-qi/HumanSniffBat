@@ -86,10 +86,10 @@ def rotate_and_crop(img, img_ref, template, cropped_width, cropped_height):
                         homography, (width, height))
 
     # Apply template Matching
-    res = cv2.matchTemplate(transformed_img,template,cv2.TM_SQDIFF_NORMED)
+    res = cv2.matchTemplate(transformed_img,template,cv2.TM_CCOEFF_NORMED)
     min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
 
-    top_left = min_loc
+    top_left = max_loc
     bottom_right = (top_left[0] + cropped_width, top_left[1] + cropped_height)
 
     final_img = transformed_img[top_left[1]:bottom_right[1],top_left[0]:bottom_right[0]]
@@ -152,6 +152,7 @@ def preprocess_raw_video(room_name, session_name, config):
             # Read video
             cap = cv2.VideoCapture(camera_paths[camera])
             num_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+            cap.set(cv2.CAP_PROP_POS_FRAMES, 50) # The first few frames have more artifacts, skip them here.
             ret, frame = cap.read()
             # Compute rigid homography on first frame. Use this homography transformation for entire video
             # 5000x5000 is a place holder to retain as much of the frame as possible after cropping.
