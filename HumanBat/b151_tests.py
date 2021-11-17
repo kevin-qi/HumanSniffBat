@@ -6,6 +6,7 @@ import pathlib
 import numpy as np
 import matplotlib.pyplot as plt
 import cv2
+import pickle
 import gc
 
 def test_ephys_noise(ephys_extracted_path, out_path):
@@ -34,7 +35,7 @@ def test_ephys_noise(ephys_extracted_path, out_path):
     return res
 
 def visualize_synchrony(motu_path, arduino_path, ephys_path, camera_path, out_path, config):
-    motu_data = np.load(motu_path, allow_pickle=True).tolist()['motu']
+    motu_data = np.load(motu_path, allow_pickle=True)['motu']
     motu_fs = motu_data['fs']
     event_motu = motu_data['data'][2,:]
     motu_data = None
@@ -78,7 +79,7 @@ def visualize_synchrony(motu_path, arduino_path, ephys_path, camera_path, out_pa
 
 
 
-    t0_motu = t0_ms*int(motu_fs/1000)
+    t0_motu = int(t0_ms*motu_fs/1000)
     t0_camera = int(t0_ms*(fps/1000))
     print(t0_camera)
     print(t0_motu)

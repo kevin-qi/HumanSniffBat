@@ -8,6 +8,7 @@ import numpy as np
 #import hdf5storage
 import re
 import gc
+import pickle
 from distutils import dir_util
 import getopt, sys
 import luigi.tools.deps_tree as deps_tree
@@ -59,7 +60,7 @@ class B151ExtractMotuData(luigi.Task):
         Path(self.out_path).mkdir(parents=True, exist_ok=True)
         self.in_path = os.path.join(os.path.join(self.data_path, 'b151/motu'))
 
-        return luigi.LocalTarget(os.path.join(self.out_path,'motu.npy'))
+        return luigi.LocalTarget(os.path.join(self.out_path,'motu.pkl'))
 
     def run(self):
         raw_motu_data = process_motu.load_motu_data(self.in_path)
@@ -69,7 +70,9 @@ class B151ExtractMotuData(luigi.Task):
         motu_data, ttl_indices = process_motu.slice_valid_motu_data(raw_motu_data, fs)
         mat_data = {'motu': {'data': motu_data, 'ttl_indices': ttl_indices, 'fs': fs}}
         #hdf5storage.savemat(self.output().path, mat_data, format='7.3')
-        np.save(self.output().path, mat_data)
+        with open(self.output().path, 'wb') as f:
+            pickle.dump(mat_data, f, protocol=pickle.HIGHEST_PROTOCOL)
+        #np.save(os.path.join(self.out_path, 'motu_data.npy'), motu_data, allow_pickle=False)
 
 class B151ExtractArduinoData(luigi.Task):
     data_path = luigi.Parameter()
@@ -196,7 +199,7 @@ class B151VisualizeSynchronyTest(luigi.Task):
         p = os.path.join(os.path.join(self.data_path, 'b151')).replace('raw','processed')
 
         self.ephys_path = os.path.join(p,'ephys')
-        self.motu_path = os.path.join(p,'motu/motu.npy')
+        self.motu_path = os.path.join(p,'motu/motu.pkl')
         self.arduino_path = os.path.join(p,'arduino/arduino.npy')
         self.camera_path = os.path.join(p,'cameras/')
         self.out_path = os.path.join(p,'tests/visualize_synchrony.mp4')
