@@ -26,4 +26,24 @@ def parse_b151_arduino_logs(log_file_path):
     arduino_state_enter_ms = np.array(arduino_state_enter_ms, dtype=np.int64) - arduino_ttl[0]
     arduino_state_exit_ms = np.array(arduino_state_exit_ms, dtype=np.int64) - arduino_ttl[0]
     arduino_ttl_ms = arduino_ttl - arduino_ttl[0]
-    return {'ttl_ms':arduino_ttl_ms, 'state':arduino_state, 'state_enter_ms':arduino_state_enter_ms, 'state_exit_ms':arduino_state_exit_ms}
+
+    # Arduino clock drift correction
+    # Basic correction by interpolating ppms (parts per millisecond)
+    # between first and last TTL
+    known_ttl_interval = 1000 # 1 sec ttl
+    num_ttl = len(arduino_ttl_ms)
+    true_ttl_ts = (num_ttl-1) * known_ttl_interval # What the final ttl timestamp should be theoretically
+    meas_ttl_ts = arduino_ttl_ms[-1]
+    print("Arduino clock drift correction: true_ttl_ts: {}, meas_ttl_ts: {}, diff: {}".format(true_ttl_ts, meas_ttl_ts, meas_ttl_ts-true_ttl_ts))
+    diff = meas_ttl_ts - true_ttl_ts
+    ppms = diff/meas_ttl_ts # Clock drift per ms
+
+    corrected_ttl_ms = (1-ppms)*arduino_ttl_ms
+    corrected_state_enter_ms = (1-ppms)*arduino_state_enter_ms
+    corrected_state_exit_ms = (1-ppms)*arduino_state_exit_ms
+
+
+    return {'corrected_ttl_ms':corrected_ttl_ms,\
+            'state':arduino_state,\
+            'corrected_state_enter_ms':corrected_state_enter_ms,\
+            'corrected_state_exit_ms':corrected_state_exit_ms}
