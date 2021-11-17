@@ -1,1 +1,26 @@
-{"b151": {"cameras": {"bottom": {"fps": 50, "anchor": "config/b151/cameras/bottom/anchor.png", "reference": "config/b151/cameras/bottom/reference.png", "crop_width":[920, 2000], "crop_height":[920, 2000]}}}, "project_root": "C:\\Users\\kevinqi\\Desktop\\HumanBat"}
+{
+  "b151": {
+    "cameras": {
+      "bottom": {
+        "fps": 50,
+        "anchor": "config/b151/cameras/bottom/anchor.png",
+        "reference": "config/b151/cameras/bottom/reference.png",
+        "crop_width": [
+          920,
+          2000
+        ],
+        "crop_height": [
+          920,
+          2000
+        ]
+      }
+    },
+    "motu": {
+      "fs": 44100
+    },
+    "ephys": {
+      "fs": 31250
+    }
+  },
+  "project_root": "C:\\Users\\kevinqi\\Desktop\\HumanBat"
+}
