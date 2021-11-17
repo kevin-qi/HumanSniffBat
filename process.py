@@ -13,13 +13,46 @@ import getopt, sys
 import luigi.tools.deps_tree as deps_tree
 from HumanBat import process_motu, process_arduino, process_ephys, process_video, b151_tests
 
+class B151CheckDataIntegrity(luigi.Task):
+    data_path = luigi.Parameter()
+    task_complete = False
+
+    with open('./config/config.json', 'r') as f:
+        config = json.load(f)
+
+    def output(self):
+        return None
+
+    def complete(self):
+        return True#self.task_complete
+
+    def run(self):
+        ephys_path = os.path.join(self.data_path, 'b151/ephys')
+        logger_dirs = os.listdir(ephys_path)
+
+        assert len(logger_dirs) == 1, "Data Integrity Error: Multiple logger folders found in {}".ephys_path
+
+        # EVENTLOG.CSV exists (extracted by EVENT_FILE_READER.EXE from NEURALYNX)
+        assert os.path.exists(os.path.join(ephys_path, logger_dirs[0], 'EVENTLOG.CSV')), "Data Integrity Error: EVENTLOG.CSV not found. Did you remember to extract it?"
+
+        # TODO: Check number of NEUR____.DAT files match expected number in EVENTLOG.CSV
+
+        # Check arduino logs exist
+        session_name = Path(self.data_path).name
+        assert os.path.exists(os.path.join(self.data_path, 'b151/{}_logs.txt'.format(session_name)))
+
+        self.task_complete = True
+
+
 class B151ExtractMotuData(luigi.Task):
     data_path = luigi.Parameter()
     print(data_path)
 
-
     with open('./config/config.json', 'r') as f:
         config = json.load(f)
+
+    def requires(self):
+        return B151CheckDataIntegrity(self.data_path)
 
     def output(self):
         self.out_path = os.path.join(os.path.join(self.data_path, 'b151/motu')).replace('raw','processed')
@@ -44,6 +77,9 @@ class B151ExtractArduinoData(luigi.Task):
     with open('./config/config.json', 'r') as f:
         config = json.load(f)
 
+    def requires(self):
+        return B151CheckDataIntegrity(self.data_path)
+
     def output(self):
         self.out_path = os.path.join(os.path.join(self.data_path, 'b151/arduino')).replace('raw','processed')
         Path(self.out_path).mkdir(parents=True, exist_ok=True)
@@ -63,6 +99,9 @@ class B151ExtractEphysData(luigi.Task):
 
     with open('./config/config.json', 'r') as f:
         config = json.load(f)
+
+    def requires(self):
+        return B151CheckDataIntegrity(self.data_path)
 
     def output(self):
         # Get logger directory path
@@ -96,6 +135,9 @@ class B151ExtractCameraData(luigi.Task):
     with open('./config/config.json', 'r') as f:
         config = json.load(f)
 
+    def requires(self):
+        return B151CheckDataIntegrity(self.data_path)
+
     def output(self):
         # Get camera data path
         self.in_path = os.path.join(os.path.join(self.data_path, 'b151/cameras'))
@@ -117,8 +159,9 @@ class B151EphysNoiseTest(luigi.Task):
     with open('./config/config.json', 'r') as f:
         config = json.load(f)
         print(config)
+
     def requires(self):
-        return B151ExtractEphysData(self.data_path)
+        return B151ExtractEphysData(self.data_path), B151CheckDataIntegrity(self.data_path)
 
     def output(self):
         p = os.path.join(os.path.join(self.data_path, 'b151/ephys/'))
@@ -146,7 +189,8 @@ class B151VisualizeSynchronyTest(luigi.Task):
         return (B151ExtractEphysData(self.data_path),\
                 B151ExtractCameraData(self.data_path),\
                 B151ExtractArduinoData(self.data_path),\
-                B151ExtractMotuData(self.data_path))
+                B151ExtractMotuData(self.data_path),\
+                B151CheckDataIntegrity(self.data_path))
 
     def output(self):
         p = os.path.join(os.path.join(self.data_path, 'b151')).replace('raw','processed')
@@ -176,7 +220,8 @@ if __name__ == '__main__':
     skip_completed = bool(options['--skip-completed'])
     assert type(skip_completed) == type(True), "{} is not a bool".format(skip_completed)
     print(deps_tree.print_tree(B151EphysNoiseTest(data_path)))
-    luigi.build([B151ExtractCameraData(data_path),\
+    luigi.build([B151CheckDataIntegrity(data_path),\
+                 B151ExtractCameraData(data_path),\
                  B151ExtractEphysData(data_path),\
                  B151ExtractArduinoData(data_path),\
                  B151ExtractMotuData(data_path),\
