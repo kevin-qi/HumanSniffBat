@@ -65,7 +65,7 @@ else: # Configure new experiment if does not exist
         json.dump(exp_config, f)
     
 sess_name = input("Session Name: ") # Enter session name
-sess_dir = os.path.join(exp_dir, sess_name)
+sess_dir = os.path.join(exp_dir, sess_name,'b151')
 Path(sess_dir).mkdir(parents=True, exist_ok=True) # Make directory if does not exist
 record_audio_flag = input("Record audio? (y/n): ")
 if record_audio_flag.lower() == 'y':

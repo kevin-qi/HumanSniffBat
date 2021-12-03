@@ -19,12 +19,12 @@
   - Change recording save path to current date
   - Position camera windows to be visible during experiment via remote desktop
   - Check recording settings are correct (50 fps, mp4, record every frame, no recording stop limit)
-  - Take a frame capture to check NIR lights are ON
+  - Capture a test image to ensure NIR lights are on / Use phone IR sensor 
 10. Setup LoggerCommand3
   - Open LoggerCommand3
   - Synchronize
   - Load saved settings from file
-  - Double check high pass frequency is 1hz and event channel (4) is INPUT,RISING and logged to SD card
+  - Double check high pass frequency is 1hz and event channel (4) is INPUT,RISING and events are logged to SD card
 11. Remove stimuli bat from cage setup
 
 12. Start MOTU recording
