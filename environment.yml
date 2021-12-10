@@ -7,5 +7,9 @@ dependencies:
   - matplotlib
   - h5py
   - scipy
+  - cpuonly
+  - torchvision
+  - pytorch
+  - torchaudio
   - scikit-image
 prefix: C:\Users\kevinqi\miniconda3\envs\bathuman
