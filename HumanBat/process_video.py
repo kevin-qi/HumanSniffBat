@@ -171,7 +171,7 @@ def preprocess_raw_video(room_name, session_name, config):
                 #use the h.264 codec
                 #set the constant rate factor to 0, which is lossless
                 #the slower the better compression, in princple})
-                video_out[(width,height)] = skvideo.io.FFmpegWriter(out_name, inputdict={'-r':str(fps),'-s':'{}x{}'.format(width,height)},outputdict={'-r':str(fps),'-c:v': 'libx264','-crf': '0','-preset':'veryslow', '-s':'{}x{}'.format(width,height), '-pix_fmt': 'rgb24'})
+                video_out[(width,height)] = skvideo.io.FFmpegWriter(out_name, inputdict={'-r':str(fps),'-s':'{}x{}'.format(width,height)},outputdict={'-r':str(fps),'-c:v': 'libx264','-crf': '0','-preset':'veryfast', '-s':'{}x{}'.format(width,height), '-pix_fmt': 'rgb24'})
 
             for i in range(num_frames):
                 if(i%int(num_frames/10) == 0):

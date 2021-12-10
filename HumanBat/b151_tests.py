@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 import cv2
 import pickle
 import gc
+import scipy.signal
 
 def test_ephys_noise(ephys_extracted_path, out_path):
     """
@@ -45,6 +46,11 @@ def visualize_synchrony(motu_path, arduino_path, ephys_path, camera_path, out_pa
     arduino_data = arduino_data.tolist()['arduino']
 
     # TODO: Ephys Data
+    ephys = np.load(ephys_path, allow_pickle=True).tolist()
+    ephys_data = ephys['data']
+    ephys_fs = ephys['fs']
+    ephys = None
+    gc.collect()
 
     state_mapping = {'RESET':0, 'READY':4, 'STIM':3, 'OPEN':2, 'REW':1}
     state_history = np.array(arduino_data['state'])
@@ -63,8 +69,9 @@ def visualize_synchrony(motu_path, arduino_path, ephys_path, camera_path, out_pa
 
     motu_step_size = T * motu_fs
     ms_step_size = T * 1000
+    ephy_step_size = T * motu_fs
 
-    last_ready_enter_index = np.where(state_history == 'READY')[0][-1]
+    last_ready_enter_index = np.where(state_history == 'READY')[0][-2]
     t0_ms = int(arduino_data['corrected_state_enter_ms'][last_ready_enter_index] - shift*1000) # ms
 
     duration = 75000 # ms
@@ -77,13 +84,24 @@ def visualize_synchrony(motu_path, arduino_path, ephys_path, camera_path, out_pa
     state_waveform = np.hstack([[0]*shift*motu_fs,state_waveform])
     duration = np.min([len(state_waveform), duration*int(motu_fs/1000)])
 
-
-
     t0_motu = int(t0_ms*motu_fs/1000)
     t0_camera = int(t0_ms*(fps/1000))
-    print(t0_camera)
-    print(t0_motu)
-    print(t0_ms)
+    t0_ephy = int(t0_ms*(ephys_fs/1000))
+    print('Synchrony check segment:')
+    print('t0_camera', t0_camera)
+    print('t0_motu',t0_motu)
+    print('t0_ms',t0_ms)
+    print('t0_ephy',t0_ephy)
+    print('duration (samples at motu_fs)', duration)
+    #print(t0_ephy+int(duration*(ephys_fs/motu_fs)))
+    print(ephys_data.shape)
+    print(int(duration*(ephys_fs/motu_fs)))
+    print(t0_ephy)
+    print(ephys_fs)
+    ephys_data = np.mean(ephys_data[:,t0_ephy:t0_ephy+int(duration*(ephys_fs/motu_fs))],axis=0)
+    print(ephys_data.shape)
+    print(duration)
+    ephys_data = scipy.signal.resample(ephys_data, duration)
 
     fourcc = cv2.VideoWriter_fourcc('m', 'p', '4', 'v')
     writer = cv2.VideoWriter(out_path,fourcc,fps = int(fps/frame_step_size), frameSize=(1200, 800))
@@ -97,7 +115,7 @@ def visualize_synchrony(motu_path, arduino_path, ephys_path, camera_path, out_pa
     fig = plt.figure(figsize=(12,8), dpi=100)
     ax1 = plt.subplot(4,3,3)
     ax2 = plt.subplot(4,3,6,sharex=ax1)
-    ax3 = plt.subplot(4,3,9)
+    ax3 = plt.subplot(4,3,9,sharex=ax1)
     ax4 = plt.subplot(4,3,12)
     ax5 = plt.subplot(2,3,1)
     ax6 = plt.subplot(2,3,2)
@@ -111,10 +129,12 @@ def visualize_synchrony(motu_path, arduino_path, ephys_path, camera_path, out_pa
     ax2_vline = ax2.axvline(0, 0,5, color='red')
     ax2.set_ylim([0,5])
 
-    ax3_text = ax3.text(0.5, 0.5, 'Camera Frame: {}'.format(0), horizontalalignment='center', verticalalignment='center', transform=ax3.transAxes, fontsize='large')
-    ax3.axis('off')
-
+    ax4_text = ax4.text(0.5, 0.5, 'Camera Frame: {}'.format(0), horizontalalignment='center', verticalalignment='center', transform=ax4.transAxes, fontsize='large')
     ax4.axis('off')
+
+    ax3.plot(ephys_data)
+    ax3_vline = ax3.axvline(0,0,2024,color='red')
+    ax3.axis('off')
 
     for i in range(int(duration*(1/motu_fs)*50)):
         frames = {}
@@ -140,8 +160,9 @@ def visualize_synchrony(motu_path, arduino_path, ephys_path, camera_path, out_pa
 
             ax1_vline.set_xdata([i*motu_step_size])
             ax2_vline.set_xdata([i*motu_step_size])
+            ax3_vline.set_xdata([i*motu_step_size])
 
-            ax3_text.set_text('Camera Frame: {}'.format(i+t0_camera))
+            ax4_text.set_text('Camera Frame: {}'.format(i+t0_camera))
 
             fig.canvas.draw()
             # convert canvas to image
