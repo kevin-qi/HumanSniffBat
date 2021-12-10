@@ -8,6 +8,10 @@ Go to Projects to find the to do list for each task:
 
 Go here for room hardware specs: https://docs.google.com/spreadsheets/d/121AViHbAI2MZlo37yAVifF2lvB6FgzjzcyXfmlC5a6w/edit#gid=1704225061
 
+Go here for experiment protocol: https://docs.google.com/document/d/1WkFO3U5VYU4Rk_AlELU-ytDVp02BDh6ZnfDxpJU5Jpg/edit?usp=sharing
+
+Individual experimental setup protocols can be found in the `protocol/` folder
+
 Task 1 - Individual discrimmination task (B151)
 
 Task 2 - Individual flight task (B149f)
