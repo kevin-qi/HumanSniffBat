@@ -52,7 +52,8 @@ Hypothesis Chart for Setup 2 in B149f
 4. conda activate bathuman # Activate installed env
 5. Install LoggerDataProcessing in utils/
 6. Install q-bats in utils/
-5. python setup.py # Run the python configuration script
+5. python setup.py build # Run the python configuration script
+6. python setup.py install # Run the python configuration script
 6. Install matlab engine for python:
     - cd <matlabroot>\extern\engines\python 
         # replace <matlabroot> with your path to matlab
