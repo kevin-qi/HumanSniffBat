@@ -44,36 +44,6 @@ class B149fCheckDataIntegrity(luigi.Task):
 
         self.task_complete = True
 
-
-class B149fExtractMotuData(luigi.Task):
-    data_path = luigi.Parameter()
-    print(data_path)
-
-    with open('./config/config.json', 'r') as f:
-        config = json.load(f)
-
-    def requires(self):
-        return B149fCheckDataIntegrity(self.data_path)
-
-    def output(self):
-        self.out_path = os.path.join(os.path.join(self.data_path, 'b149f/motu')).replace('raw','processed')
-        Path(self.out_path).mkdir(parents=True, exist_ok=True)
-        self.in_path = os.path.join(os.path.join(self.data_path, 'b149f/motu'))
-
-        return luigi.LocalTarget(os.path.join(self.out_path,'motu.pkl'))
-
-    def run(self):
-        raw_motu_data = process_motu.load_motu_data(self.in_path)
-        print(raw_motu_data.shape)
-        fs = self.config['b149f']['motu']['fs']
-
-        motu_data, ttl_indices = process_motu.slice_valid_motu_data(raw_motu_data, fs)
-        mat_data = {'motu': {'data': motu_data, 'ttl_indices': ttl_indices, 'fs': fs}}
-        #hdf5storage.savemat(self.output().path, mat_data, format='7.3')
-        with open(self.output().path, 'wb') as f:
-            pickle.dump(mat_data, f, protocol=pickle.HIGHEST_PROTOCOL)
-        #np.save(os.path.join(self.out_path, 'motu_data.npy'), motu_data, allow_pickle=False)
-
 class B149fExtractArduinoData(luigi.Task):
     data_path = luigi.Parameter()
 
@@ -170,6 +140,11 @@ if __name__ == '__main__':
 
     data_path = options['--data-path']
     assert os.path.isdir(data_path), "{} is not a valid directory".format(data_path)
+
+    with open('./config/config.json', 'r') as f:
+        config = json.load(f)
+
+    #data_path = os.path.join(config['project_root'], data_path)
 
     skip_completed = bool(options['--skip-completed'])
     assert type(skip_completed) == type(True), "{} is not a bool".format(skip_completed)

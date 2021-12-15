@@ -16,10 +16,10 @@ with open('config/config.json', 'r') as f:
 
 # Configure project root
 config['project_root'] = project_root
-print("Configured project root")
+print("Configured project root: {}".format(project_root))
 
 # Save to configuration file
-with open('config.json', 'w') as f:
+with open('config/config.json', 'w') as f:
     config = json.dump(config, f)
 
 print("Project setup successful!")
