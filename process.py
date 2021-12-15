@@ -185,7 +185,7 @@ class B151ExtractCameraData(luigi.Task):
         # Extract camera data
         room_name = 'b151'
         session_name = Path(self.data_path).name
-        process_video.preprocess_raw_video(room_name, session_name, self.config)
+        process_video.preprocess_raw_video(room_name, session_name, self.data_path, self.config)
 
 class B151EphysNoiseTest(luigi.Task):
     data_path = luigi.Parameter()

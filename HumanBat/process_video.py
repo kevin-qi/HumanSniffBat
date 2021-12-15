@@ -5,6 +5,7 @@ from pathlib import Path
 import os
 import shutil
 import skvideo.io
+import time
 
 def rotate_and_crop(img, img_ref, template, cropped_width, cropped_height):
     """
@@ -42,8 +43,8 @@ def rotate_and_crop(img, img_ref, template, cropped_width, cropped_height):
 
     # Extract orb key points in both images
     orb_detector = cv2.ORB_create(4000)
-    kp1, d1 = orb_detector.detectAndCompute(img_ref, None)
-    kp2, d2 = orb_detector.detectAndCompute(img, None)
+    kp1, d1 = orb_detector.detectAndCompute(img, None)
+    kp2, d2 = orb_detector.detectAndCompute(img_ref, None)
 
     # Find key points that match in both images
     matcher = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck = True)
@@ -86,17 +87,18 @@ def rotate_and_crop(img, img_ref, template, cropped_width, cropped_height):
                         homography, (width, height))
 
     # Apply template Matching
-    res = cv2.matchTemplate(transformed_img,template,cv2.TM_CCOEFF_NORMED)
+    res = cv2.matchTemplate(transformed_img[:100,:30],template,cv2.TM_CCOEFF_NORMED)
     min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
 
     top_left = max_loc
+    print(top_left)
     bottom_right = (top_left[0] + cropped_width, top_left[1] + cropped_height)
 
     final_img = transformed_img[top_left[1]:bottom_right[1],top_left[0]:bottom_right[0]]
 
     return (final_img,homography,top_left,bottom_right)
 
-def preprocess_raw_video(room_name, session_name, config):
+def preprocess_raw_video(room_name, session_name, data_path, config):
     """
     Preprocessing pipeline for video data
 
@@ -121,7 +123,7 @@ def preprocess_raw_video(room_name, session_name, config):
     assert room_name in ('b151', 'b149f', 'b149b')
 
     # Set paths
-    data_path = os.path.join(root,'data/raw/{}/{}'.format(session_name, room_name))
+    data_path = os.path.join(data_path,room_name)
     cameras_path = os.path.join(data_path, 'cameras')
 
     # Camera data paths for all cameras in the specified room
@@ -171,11 +173,12 @@ def preprocess_raw_video(room_name, session_name, config):
                 #use the h.264 codec
                 #set the constant rate factor to 0, which is lossless
                 #the slower the better compression, in princple})
-                video_out[(width,height)] = skvideo.io.FFmpegWriter(out_name, inputdict={'-r':str(fps),'-s':'{}x{}'.format(width,height)},outputdict={'-r':str(fps),'-c:v': 'libx264','-crf': '0','-preset':'veryfast', '-s':'{}x{}'.format(width,height), '-pix_fmt': 'rgb24'})
+                video_out[(width,height)] = skvideo.io.FFmpegWriter(out_name, inputdict={'-r':str(fps),'-s':'{}x{}'.format(width,height)},outputdict={'-r':str(fps),'-c:v': 'libx264','-crf': '0','-preset':'ultrafast', '-s':'{}x{}'.format(width,height), '-pix_fmt': 'rgb24'})
 
+            start_time = time.time()
             for i in range(num_frames):
-                if(i%int(num_frames/10) == 0):
-                    print("Processed {} frames".format(i))
+                if(i%int(num_frames/20) == 0 and i!=0):
+                    print("Processed {}/{} frames | {} | FPS: {}".format(i,num_frames,time.strftime("%H:%M:%S"),i/(time.time()-start_time)))
 
                 ret, frame = cap.read()
 
@@ -187,12 +190,10 @@ def preprocess_raw_video(room_name, session_name, config):
 
                     # Perform rotation
                     rotated_frame = cv2.warpAffine(frame, rotation_transform, frame.shape[:2][::-1])
-
                     # Crop based on anchor position and configured crop size
                     cropped_frame = rotated_frame[top_left[1]:bottom_right[1], top_left[0]:bottom_right[0]]
                     # Write to corresponding video file
                     video_out[(width,height)].writeFrame(cropped_frame)
-
 
             # Cleanup
             for (width,height) in zip(crop_w,crop_h):
