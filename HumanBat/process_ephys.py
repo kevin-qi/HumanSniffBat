@@ -38,7 +38,7 @@ def extract(data_path):
     eng.addpath(LoggerDataProcessingPath, nargout=0)
 
     print("Running extraction script... ")
-    eng.extract_logger_data(matlab_path,'Diary',False,nargout=0)
+    eng.extract_logger_data(matlab_path,'Diary',False, 'NlxSave', 1, nargout=0)
 
     print("Extraction complete!")
 

@@ -9,10 +9,13 @@ import numpy as np
 import re
 import gc
 import pickle
+import glob
 from distutils import dir_util
 import getopt, sys
 import luigi.tools.deps_tree as deps_tree
-from HumanBat import process_motu, process_arduino, process_ephys, process_video# b_tests
+from HumanBat import process_motu, process_arduino, process_ephys, process_video, process_cortex, process_ciholas# b_tests
+from HumanBat.qbats.utils import savemat73
+
 
 class B149fCheckDataIntegrity(luigi.Task):
     data_path = luigi.Parameter()
@@ -44,7 +47,7 @@ class B149fCheckDataIntegrity(luigi.Task):
 
         self.task_complete = True
 
-class B149fExtractArduinoData(luigi.Task):
+class B149fExtractCiholasData(luigi.Task):
     data_path = luigi.Parameter()
 
     with open('./config/config.json', 'r') as f:
@@ -54,18 +57,39 @@ class B149fExtractArduinoData(luigi.Task):
         return B149fCheckDataIntegrity(self.data_path)
 
     def output(self):
-        self.out_path = os.path.join(os.path.join(self.data_path, 'b149f/arduino')).replace('raw','processed')
+        self.out_path = os.path.join(os.path.join(self.data_path, 'b149f/ciholas')).replace('raw','processed')
         Path(self.out_path).mkdir(parents=True, exist_ok=True)
-        self.in_path = os.path.join(os.path.join(self.data_path, 'b149f'))
-        return luigi.LocalTarget(os.path.join(self.out_path,'arduino.npy'))
+        self.in_path = os.path.join(os.path.join(self.data_path, 'b149f/ciholas'))
+        self.in_file = glob.glob(os.path.join(self.in_path, '*_cdp_1.txt'))[0]
+        print(self.in_file)
+        return luigi.LocalTarget(os.path.join(self.out_path,'extracted_{}.mat'.format(Path(self.in_file).stem)))
+
+    def run(self):
+        tag_1_sn = self.config['b149f']['ciholas']['tag_1']['serial_number']
+        tag_2_sn = self.config['b149f']['ciholas']['tag_1']['serial_number']
+        tag_SNs = [tag_1_sn, tag_2_sn]
+        process_ciholas.extract_ciholas(self.in_file, tag_SNs)
+        dir_util.copy_tree(os.path.join(self.in_path),self.out_path)
+
+class B149fExtractCortexData(luigi.Task):
+    data_path = luigi.Parameter()
+
+    with open('./config/config.json', 'r') as f:
+        config = json.load(f)
+
+    def requires(self):
+        return B149fCheckDataIntegrity(self.data_path)
+
+    def output(self):
+        self.out_path = os.path.join(os.path.join(self.data_path, 'b149f/cortex')).replace('raw','processed')
+        Path(self.out_path).mkdir(parents=True, exist_ok=True)
+        self.in_path = os.path.join(os.path.join(self.data_path, 'b149f/cortex/Generated_C3D_files'))
+        return luigi.LocalTarget(os.path.join(self.out_path,'_track.mat'))
 
     def run(self):
         session_name = Path(self.data_path).name
-        arduino_data = process_arduino.parse_b149f_arduino_logs(os.path.join(self.in_path, '{}_logs.txt'.format(session_name)))
-
-        arduino_data = {'arduino': arduino_data}
-        #hdf5storage.savemat(self.output().path, arduino_data, format='7.3')
-        np.save(self.output().path, arduino_data)
+        process_cortex.extract_cortex_c3d(self.in_path)
+        dir_util.copy_tree(os.path.join(self.in_path,'processed'),self.out_path)
 
 class B149fExtractEphysData(luigi.Task):
     data_path = luigi.Parameter()
@@ -79,9 +103,11 @@ class B149fExtractEphysData(luigi.Task):
     def output(self):
         # Get logger directory path
         self.in_path = os.path.join(os.path.join(self.data_path, 'b149f/ephys'))
-        dirs = os.listdir(self.in_path)
-        r = re.compile("(.*_\d\d)")
+        dirs = [a for a in os.listdir(self.in_path) if os.path.isdir(os.path.join(self.in_path,a))]
+
+        r = re.compile("(.*\d\d)")
         logger_dirs = list(filter(r.match, dirs))
+        print("logger directories found: {}".format(logger_dirs))
         assert len(logger_dirs) == 1, "There should only be 1 logger folder! Found {}".format(logger_dirs)
         self.in_path = os.path.join(self.in_path, logger_dirs[0])
 
@@ -132,23 +158,4 @@ class B149fDownsampleEphysData(luigi.Task):
         # Extract logger data
         ephys_ds = process_ephys.load_extracted_data(os.path.join(self.out_path,'extracted_data'), fs, 10)
         np.save(self.output().path, ephys_ds, allow_pickle = True)
-
-
-if __name__ == '__main__':
-    options, args = getopt.getopt(sys.argv[1:], "", ['local-scheduler', 'data-path=', 'skip-completed='])
-    options = dict(options)
-
-    data_path = options['--data-path']
-    assert os.path.isdir(data_path), "{} is not a valid directory".format(data_path)
-
-    with open('./config/config.json', 'r') as f:
-        config = json.load(f)
-
-    #data_path = os.path.join(config['project_root'], data_path)
-
-    skip_completed = bool(options['--skip-completed'])
-    assert type(skip_completed) == type(True), "{} is not a bool".format(skip_completed)
-    #print(deps_tree.print_tree(B149fEphysNoiseTest(data_path)))
-    luigi.build([B149fExtractEphysData(data_path)],
-                 workers=4,
-                 log_level='WARNING')
+        savemat73(ephys_ds,self.output().path.replace('.npy', '.mat'))
