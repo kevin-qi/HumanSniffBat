@@ -16,6 +16,7 @@ if __name__ == '__main__':
     assert type(skip_completed) == type(True), "{} is not a bool".format(skip_completed)
     print(deps_tree.print_tree(B151EphysNoiseTest(data_path)))
     #luigi.build([B151BottomCameraDLC(data_path)])
+    """
     luigi.build([B149fExtractEphysData(data_path),  # B149f
                  B149fDownsampleEphysData(data_path),
                  B149fExtractCortexData(data_path),
@@ -37,6 +38,7 @@ if __name__ == '__main__':
                  B151BottomCameraDLC(data_path),\
                  B149fExtractEphysData(data_path),\  # B149f
                  B149fDownsampleEphysData(data_path),\
+                 B149fExtractCiholasData(data_path),\
                  B149fExtractCortexData(data_path)],
                  workers=4,
-                 log_level='INFO')"""
+                 log_level='INFO')
