@@ -23,7 +23,17 @@
   "b149f": {
     "ephys": {
       "fs": 31250
+    },
+    "ciholas": {
+      "tag_1": {
+        "serial_number": 17106917,
+        "name": "KQ"
+      },
+      "tag_2": {
+        "serial_number": 17106934,
+        "name": "MS"
+      }
     }
   },
-  "project_root": "C:\\Users\\kevinqi\\Desktop\\HumanBat"
+  "project_root": "/home/batlab/Desktop/HumanBat"
 }
