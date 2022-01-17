@@ -84,12 +84,14 @@ class B149fExtractCortexData(luigi.Task):
         self.out_path = os.path.join(os.path.join(self.data_path, 'b149f/cortex')).replace('raw','processed')
         Path(self.out_path).mkdir(parents=True, exist_ok=True)
         self.in_path = os.path.join(os.path.join(self.data_path, 'b149f/cortex/Generated_C3D_files'))
-        return luigi.LocalTarget(os.path.join(self.out_path,'_track.mat'))
+
+        return luigi.LocalTarget(os.path.join(self.out_path,'done.npy'))
 
     def run(self):
         session_name = Path(self.data_path).name
         process_cortex.extract_cortex_c3d(self.in_path)
         dir_util.copy_tree(os.path.join(self.in_path,'processed'),self.out_path)
+        np.save(os.path.join(self.out_path,'done.npy'), np.array([1]))
 
 class B149fExtractEphysData(luigi.Task):
     data_path = luigi.Parameter()

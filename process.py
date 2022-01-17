@@ -27,18 +27,18 @@ if __name__ == '__main__':
                  workers=4,
                  log_level='INFO')
     """
-    luigi.build([B151CheckDataIntegrity(data_path),\ # B151
-                 B151ExtractCameraData(data_path),\
-                 B151ExtractEphysData(data_path),\
-                 B151DownsampleEphysData(data_path),\
-                 B151ExtractArduinoData(data_path),\
-                 B151ExtractMotuData(data_path),\
-                 B151EphysNoiseTest(data_path),\
-                 B151VisualizeSynchronyTest(data_path),\
-                 B151BottomCameraDLC(data_path),\
-                 B149fExtractEphysData(data_path),\  # B149f
-                 B149fDownsampleEphysData(data_path),\
-                 B149fExtractCiholasData(data_path),\
+    luigi.build([B151CheckDataIntegrity(data_path), # B151
+                 B151ExtractCameraData(data_path),
+                 B151ExtractEphysData(data_path),
+                 B151DownsampleEphysData(data_path),
+                 B151ExtractArduinoData(data_path),
+                 B151ExtractMotuData(data_path),
+                 B151EphysNoiseTest(data_path),
+                 B151VisualizeSynchronyTest(data_path),
+                 B151BottomCameraDLC(data_path),
+                 B149fExtractEphysData(data_path),  # B149f
+                 B149fDownsampleEphysData(data_path),
+                 B149fExtractCiholasData(data_path),
                  B149fExtractCortexData(data_path)],
                  workers=4,
                  log_level='INFO')

@@ -29,7 +29,7 @@ def extract_ciholas(data_path, tag_SNs):
 
     # Add q-bats path
     # Path is absolute
-    QbatsPath = os.path.join(os.path.dirname(os.path.realpath(__file__)),'q-bats')
+    QbatsPath = os.path.join(os.path.dirname(os.path.realpath(__file__)),'qbats')
     QbatsPath = eng.genpath(QbatsPath)
     eng.addpath(QbatsPath, nargout=0)
 

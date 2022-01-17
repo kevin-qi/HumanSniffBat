@@ -201,7 +201,7 @@ class B151BottomCameraDLC(DockerTask.DockerTask):
 
     @property
     def environment(self):
-        return {'NVIDIA_VISIBLE_DEVICES': 'all', 'VIDEO_PATH':os.path.join(data_path.replace('raw','processed'), 'b151/cameras/bottom')}
+        return {'NVIDIA_VISIBLE_DEVICES': 'all', 'VIDEO_PATH':os.path.join(self.data_path.replace('raw','processed'), 'b151/cameras/bottom')}
 
     @property
     def image(self):
@@ -209,7 +209,7 @@ class B151BottomCameraDLC(DockerTask.DockerTask):
 #ipython /app/dlc_analyze_videos.py
     @property
     def command(self):
-        return 'ipython HumanBat_DLC/dlc_analyze_videos.py'
+        return 'ipython HumanBat/dlc_analyze_videos.py'
 
     @property
     def container_options(self):

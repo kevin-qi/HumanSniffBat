@@ -25,7 +25,7 @@ def test_ephys_noise(ephys_extracted_path, out_path):
     # Path is absolute
     matlab_script_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),'tests')
     matlab_script_path = eng.genpath(matlab_script_path)
-    q_bats_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),'q-bats/ephys_bats/matlab')
+    q_bats_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),'qbats')
     q_bats_path = eng.genpath(q_bats_path)
     eng.addpath(matlab_script_path, nargout=0)
     eng.addpath(q_bats_path, nargout=0)
