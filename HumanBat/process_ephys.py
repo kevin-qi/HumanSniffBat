@@ -77,3 +77,39 @@ def load_extracted_data(extracted_ephys_path, fs, ds_factor):
         ephys_data.append(ephys_ds)
 
     return {'data': np.vstack(ephys_data)[:,ttl_t0:], 'ttl_ts': ttl_ts, 'fs':fs/ds_factor}
+
+def extracted2binary(extracted_ephys_path):
+
+    # Calls matlab script to extract ephys to a binary file
+
+    # Start matlab engine
+    eng = matlab.engine.start_matlab()
+
+    # Add LoggerDataProcessing Path
+    # Path is absolute
+    LoggerDataProcessingPath = os.path.dirname(os.path.realpath(__file__))
+    LoggerDataProcessingPath = eng.genpath(LoggerDataProcessingPath)
+    eng.addpath(LoggerDataProcessingPath, nargout=0)
+
+    print("Running extraction2binary script... ")
+    eng.extractedlogger2binary(extracted_ephys_path, nargout=0)
+
+    return
+
+def run_kilosort2(extracted_ephys_path):
+
+    # Runs kilosort2
+
+    # Start matlab engine
+    eng = matlab.engine.start_matlab()
+
+    # Add LoggerDataProcessing Path
+    # Path is absolute
+    LoggerDataProcessingPath = os.path.dirname(os.path.realpath(__file__))
+    LoggerDataProcessingPath = eng.genpath(LoggerDataProcessingPath)
+    eng.addpath(LoggerDataProcessingPath, nargout=0)
+
+    print("Running kilosort2 script... ")
+    eng.mymaster_kilosort(extracted_ephys_path, 'Server_folder','','rootZ','extracted_ephys_path',nargout=0)
+
+    return

@@ -3,6 +3,7 @@ data/**/*
 HumanBat/LoggerDataProcessing
 HumanBat/q-bats
 HumanBat/yolov5
+HumanBat/SeqBat
 HumanBat/datasets
 HumanBat/data_monitor
 HumanBat/ImBat

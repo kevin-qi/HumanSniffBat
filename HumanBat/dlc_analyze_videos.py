@@ -6,7 +6,7 @@ print(os.listdir())
 vid_path = os.environ.get('VIDEO_PATH')
 
 # Project config path (point to desired trained net project)
-project_config_path = 'HumanBat/HumanBat_DLC/dlc_projects/B151_211116_IMPLANT_BOTTOM-Madeleine-2021-11-22/config.yaml'
+project_config_path = 'HumanBat/HumanBat_DLC/dlc_projects/B151_220104_IMPLANT_LIGHTS_BOTTOM-Madeleine-2022-01-13/config.yaml'
 
 # Video file
 vid_name = [fname for fname in os.listdir(vid_path) if fname.endswith('.mp4')][0]

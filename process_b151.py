@@ -150,7 +150,7 @@ class B151DownsampleEphysData(luigi.Task):
         # Get logger directory path
         self.in_path = os.path.join(os.path.join(self.data_path, 'b151/ephys'))
         dirs = os.listdir(self.in_path)
-        r = re.compile("(.*_\d\d)")
+        r = re.compile("(.*\d\d)")
         logger_dirs = list(filter(r.match, dirs))
         assert len(logger_dirs) == 1, "There should only be 1 logger folder! Found {}".format(logger_dirs)
         self.in_path = os.path.join(self.in_path, logger_dirs[0])
@@ -168,6 +168,34 @@ class B151DownsampleEphysData(luigi.Task):
         ephys_ds = process_ephys.load_extracted_data(os.path.join(self.out_path,'extracted_data'), fs, 10)
         np.save(self.output().path, ephys_ds, allow_pickle = True)
         savemat73(ephys_ds,self.output().path.replace('.npy', '.mat'))
+
+
+class B151KilosortEphysData(luigi.Task):
+    data_path = luigi.Parameter()
+
+    with open('./config/config.json', 'r') as f:
+        config = json.load(f)
+
+    def requires(self):
+        return (B151CheckDataIntegrity(self.data_path), B151ExtractEphysData(self.data_path))
+
+    def output(self):
+        # Get logger directory path
+        self.in_path = os.path.join(os.path.dirname(self.data_path.replace('raw','processed')),'b151/ephys/extracted_data')
+
+        # Create output path
+        self.out_path = os.path.join(self.data_path,'b151/ephys/spikesorted/params.py')
+
+        return luigi.LocalTarget(self.out_path)
+
+    def run(self):
+        fs = self.config['b151']['ephys']['fs']
+
+        # Process ephys into binary file
+        process_ephys.extracted2binary(self.in_path)
+
+        # Run kilosort2
+        process_ephys.run_kilosort2(self.in_path)
 
 class B151ExtractCameraData(luigi.Task):
     data_path = luigi.Parameter()
@@ -236,7 +264,7 @@ class B151BottomCameraDLC(DockerTask.DockerTask):
         which gets defined by default. This should return a list of strings.
         e.g. ['/hostpath1:/containerpath1', '/hostpath2:/containerpath2']
         '''
-        return ['/home/batlab/Desktop/HumanBat:/app']
+        return ['/home/batlab/Desktop/HumanBat:/app:z']
 
 
 class B151EphysNoiseTest(luigi.Task):

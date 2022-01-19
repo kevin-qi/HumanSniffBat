@@ -27,13 +27,18 @@ def extract_cortex_c3d(data_path):
 
     # Add LoggerDataProcessing Path
     # Path is absolute
-    QbatsPath = os.path.join(os.path.dirname(os.path.realpath(__file__)),'qbats')
-    QbatsPath = eng.genpath(QbatsPath)
+    HumanBatPath = os.path.dirname(os.path.realpath(__file__))
+    print(HumanBatPath)
+    HumanBatPath = eng.genpath(HumanBatPath)
 
-    eng.addpath(QbatsPath, nargout=0)
+    eng.addpath(HumanBatPath, nargout=0)
+
+    LoggerDataProcessingPath = os.path.join(os.path.dirname(os.path.realpath(__file__)),'qbats/cortex')
+    LoggerDataProcessingPath = eng.genpath(LoggerDataProcessingPath)
+    eng.addpath(LoggerDataProcessingPath, nargout=0)
 
     print("Running cortex C3D extraction script... ")
     print(data_path)
-    eng.extract_tracking_data(data_path,nargout=0)
+    eng.HumanBat_extract_tracking_data(data_path,nargout=0)
 
     print("Cortex C3D Extraction complete!")

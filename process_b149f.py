@@ -60,7 +60,7 @@ class B149fExtractCiholasData(luigi.Task):
         self.out_path = os.path.join(os.path.join(self.data_path, 'b149f/ciholas')).replace('raw','processed')
         Path(self.out_path).mkdir(parents=True, exist_ok=True)
         self.in_path = os.path.join(os.path.join(self.data_path, 'b149f/ciholas'))
-        self.in_file = glob.glob(os.path.join(self.in_path, '*_cdp_1.txt'))[0]
+        self.in_file = glob.glob(os.path.join(self.in_path, '*_cdp_*.txt'))[0]
         print(self.in_file)
         return luigi.LocalTarget(os.path.join(self.out_path,'extracted_{}.mat'.format(Path(self.in_file).stem)))
 
@@ -83,7 +83,7 @@ class B149fExtractCortexData(luigi.Task):
     def output(self):
         self.out_path = os.path.join(os.path.join(self.data_path, 'b149f/cortex')).replace('raw','processed')
         Path(self.out_path).mkdir(parents=True, exist_ok=True)
-        self.in_path = os.path.join(os.path.join(self.data_path, 'b149f/cortex/Generated_C3D_files'))
+        self.in_path = os.path.join(os.path.join(self.data_path, 'b149f/cortex'))
 
         return luigi.LocalTarget(os.path.join(self.out_path,'done.npy'))
 
@@ -143,7 +143,7 @@ class B149fDownsampleEphysData(luigi.Task):
         # Get logger directory path
         self.in_path = os.path.join(os.path.join(self.data_path, 'b149f/ephys'))
         dirs = os.listdir(self.in_path)
-        r = re.compile("(.*_\d\d)")
+        r = re.compile("(.*\d\d)")
         logger_dirs = list(filter(r.match, dirs))
         assert len(logger_dirs) == 1, "There should only be 1 logger folder! Found {}".format(logger_dirs)
         self.in_path = os.path.join(self.in_path, logger_dirs[0])
