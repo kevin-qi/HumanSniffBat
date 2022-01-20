@@ -1,7 +1,6 @@
 data/**/*
 .ipynb_checkpoints
 HumanBat/LoggerDataProcessing
-HumanBat/q-bats
 HumanBat/yolov5
 HumanBat/SeqBat
 HumanBat/datasets
@@ -16,8 +15,6 @@ HumanBat/DockerTask.py
 HumanBat/HumanBat_DLC
 build/
 dist/
-q-bats
-qbats
 */__pycache__
 __pycache__
 .egg-info

@@ -90,7 +90,7 @@ class B149fExtractCortexData(luigi.Task):
     def run(self):
         session_name = Path(self.data_path).name
         process_cortex.extract_cortex_c3d(self.in_path)
-        dir_util.copy_tree(os.path.join(self.in_path,'processed'),self.out_path)
+        dir_util.copy_tree(os.path.join(self.in_path,'Generated_C3D_files/processed'),self.out_path)
         np.save(os.path.join(self.out_path,'done.npy'), np.array([1]))
 
 class B149fExtractEphysData(luigi.Task):
@@ -142,22 +142,33 @@ class B149fDownsampleEphysData(luigi.Task):
     def output(self):
         # Get logger directory path
         self.in_path = os.path.join(os.path.join(self.data_path, 'b149f/ephys'))
-        dirs = os.listdir(self.in_path)
-        r = re.compile("(.*\d\d)")
-        logger_dirs = list(filter(r.match, dirs))
-        assert len(logger_dirs) == 1, "There should only be 1 logger folder! Found {}".format(logger_dirs)
-        self.in_path = os.path.join(self.in_path, logger_dirs[0])
 
         # Create output path
-        self.out_path = os.path.dirname(self.in_path.replace('raw','processed'))
-        Path(self.out_path).mkdir(parents=True, exist_ok=True)
+        self.out_path = self.in_path.replace('raw','processed')
 
-        return luigi.LocalTarget(os.path.join(self.out_path,'ephys_ds.npy'))
+        return luigi.LocalTarget(os.path.join(self.out_path,'logger_data.mat'))
 
     def run(self):
-        fs = self.config['b149f']['ephys']['fs']
+        ephys_ds = process_ephys.format_extracted_logger_data(os.path.join(self.out_path))
 
-        # Extract logger data
-        ephys_ds = process_ephys.load_extracted_data(os.path.join(self.out_path,'extracted_data'), fs, 10)
-        np.save(self.output().path, ephys_ds, allow_pickle = True)
-        savemat73(ephys_ds,self.output().path.replace('.npy', '.mat'))
+class B149fKilosortEphysData(luigi.Task):
+    data_path = luigi.Parameter()
+
+    with open('./config/config.json', 'r') as f:
+        config = json.load(f)
+
+    def requires(self):
+        return (B149fCheckDataIntegrity(self.data_path), B149fExtractEphysData(self.data_path))
+
+    def output(self):
+        # Get logger directory path
+        self.in_path = os.path.join(self.data_path.replace('raw','processed'),'b149f/ephys')
+
+        # Create output path
+        self.out_path = os.path.join(self.data_path,'b149f/ephys/spikesorted/params.py')
+
+        return luigi.LocalTarget(self.out_path)
+
+    def run(self):
+        # Sort with kilosort2
+        process_ephys.run_kilosort2(self.in_path)

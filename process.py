@@ -16,7 +16,8 @@ if __name__ == '__main__':
     assert type(skip_completed) == type(True), "{} is not a bool".format(skip_completed)
     print(deps_tree.print_tree(B151EphysNoiseTest(data_path)))
 
-    #luigi.build([B149fExtractCortexData(data_path)])
+    #luigi.build([B149fDownsampleEphysData(data_path),B149fKilosortEphysData(data_path)])
+
     """
     luigi.build([B149fExtractEphysData(data_path),  # B149f
                  B149fDownsampleEphysData(data_path),
@@ -29,17 +30,17 @@ if __name__ == '__main__':
                  log_level='INFO'))"""
 
     luigi.build([B151CheckDataIntegrity(data_path), # B151
-                 B151ExtractCameraData(data_path),
-                 B151ExtractEphysData(data_path),
-                 B151DownsampleEphysData(data_path),
-                 B151ExtractArduinoData(data_path),
-                 B151ExtractMotuData(data_path),
-                 B151EphysNoiseTest(data_path),
-                 B151VisualizeSynchronyTest(data_path),
-                 B151BottomCameraDLC(data_path),
-                 B149fExtractEphysData(data_path),  # B149f
-                 B149fDownsampleEphysData(data_path),
-                 B149fExtractCiholasData(data_path),
-                 B149fExtractCortexData(data_path)],
-                 workers=4,
-                 log_level='INFO')
+                  B151ExtractCameraData(data_path),
+                  B151ExtractEphysData(data_path),
+                  B151DownsampleEphysData(data_path),
+                  B151ExtractArduinoData(data_path),
+                  B151ExtractMotuData(data_path),
+                  B151EphysNoiseTest(data_path),
+                  B151BottomCameraDLC(data_path),
+                  B149fExtractEphysData(data_path),  # B149f
+                  B149fDownsampleEphysData(data_path),
+                  B149fExtractCiholasData(data_path),
+                  B149fExtractCortexData(data_path)],
+                  workers=4,
+                  log_level='INFO',
+                  logging_conf_file='logging.conf')
