@@ -1,1 +1,0 @@
-# HumanBat Experiment Daily Routine

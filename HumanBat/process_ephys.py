@@ -8,6 +8,7 @@ import re
 import scipy.signal
 import scipy.io
 import numpy as np
+from HumanBat.qbats.utils import PyMatlab
 
 def extract(data_path):
     """
@@ -42,6 +43,7 @@ def extract(data_path):
 
     print("Extraction complete!")
 
+"""
 def load_extracted_data(extracted_ephys_path, fs, ds_factor):
     #print(os.listdir(extracted_ephys_path))
     fnames = os.listdir(extracted_ephys_path)
@@ -72,11 +74,19 @@ def load_extracted_data(extracted_ephys_path, fs, ds_factor):
         ch_data = mat73.loadmat(os.path.join(extracted_ephys_path, fname+'CSC{}.mat'.format(i)))['AD_count_int16']
 
         # Resample
-        ephys_ds = scipy.signal.resample_poly(ch_data, 1, ds_factor)
+        if(ds_factor>1):
+            ephys_ds = scipy.signal.resample_poly(ch_data, 1, ds_factor)
+        else:
+            ephys_ds = ch_data
         print(ephys_ds.shape)
         ephys_data.append(ephys_ds)
 
-    return {'data': np.vstack(ephys_data)[:,ttl_t0:], 'ttl_ts': ttl_ts, 'fs':fs/ds_factor}
+    return {'data': np.vstack(ephys_data)[:,ttl_t0:], 'ttl_ts': ttl_ts, 'fs':fs/ds_factor}"""
+
+def format_extracted_logger_data(extracted_ephys_path):
+    pylab = PyMatlab(os.path.dirname(os.path.realpath(__file__)))
+    print("Formatting extracted logger data... ")
+    pylab.eng.format_extracted_logger_data(extracted_ephys_path, nargout=0)
 
 def extracted2binary(extracted_ephys_path):
 
@@ -92,7 +102,7 @@ def extracted2binary(extracted_ephys_path):
     eng.addpath(LoggerDataProcessingPath, nargout=0)
 
     print("Running extraction2binary script... ")
-    eng.extractedlogger2binary(extracted_ephys_path, nargout=0)
+    eng.format_extracted_logger_data(extracted_ephys_path, nargout=0)
 
     return
 
@@ -110,6 +120,6 @@ def run_kilosort2(extracted_ephys_path):
     eng.addpath(LoggerDataProcessingPath, nargout=0)
 
     print("Running kilosort2 script... ")
-    eng.mymaster_kilosort(extracted_ephys_path, 'Server_folder','','rootZ','extracted_ephys_path',nargout=0)
+    eng.mymaster_kilosort('',extracted_ephys_path,nargout=0)
 
     return
