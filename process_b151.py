@@ -230,7 +230,7 @@ class B151BottomCameraDLC(DockerTask.DockerTask):
         return False
 
     def output(self):
-        return luigi.Localtarget(os.path.join(self.data_path.replace('raw', 'processed'),'b151/cameras/done.npy'))
+        return luigi.LocalTarget(os.path.join(self.data_path.replace('raw', 'processed'),'b151/cameras/done.npy'))
 
     def requires(self):
         return B151ExtractCameraData(self.data_path)
