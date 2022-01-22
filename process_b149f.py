@@ -165,7 +165,7 @@ class B149fKilosortEphysData(luigi.Task):
         self.in_path = os.path.join(self.data_path.replace('raw','processed'),'b149f/ephys')
 
         # Create output path
-        self.out_path = os.path.join(self.data_path,'b149f/ephys/spikesorted/params.py')
+        self.out_path = os.path.join(self.data_path.replace('raw','processed'),'b149f/ephys/params.py')
 
         return luigi.LocalTarget(self.out_path)
 

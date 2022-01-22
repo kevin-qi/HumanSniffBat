@@ -167,7 +167,7 @@ class B151KilosortEphysData(luigi.Task):
         self.in_path = os.path.join(self.data_path.replace('raw','processed'),'b151/ephys')
 
         # Create output path
-        self.out_path = os.path.join(self.data_path,'b151/ephys/spikesorted/params.py')
+        self.out_path = os.path.join(self.data_path.replace('raw','processed'),'b151/ephys/params.py')
 
         return luigi.LocalTarget(self.out_path)
 
@@ -230,7 +230,7 @@ class B151BottomCameraDLC(DockerTask.DockerTask):
         return False
 
     def output(self):
-        return
+        return luigi.Localtarget(os.path.join(self.data_path.replace('raw', 'processed'),'b151/cameras/done.npy'))
 
     def requires(self):
         return B151ExtractCameraData(self.data_path)
