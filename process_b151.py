@@ -164,7 +164,7 @@ class B151KilosortEphysData(luigi.Task):
 
     def output(self):
         # Get logger directory path
-        self.in_path = os.path.join(os.path.dirname(self.data_path.replace('raw','processed')),'b151/ephys')
+        self.in_path = os.path.join(self.data_path.replace('raw','processed'),'b151/ephys')
 
         # Create output path
         self.out_path = os.path.join(self.data_path,'b151/ephys/spikesorted/params.py')

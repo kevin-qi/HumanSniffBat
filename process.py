@@ -34,13 +34,15 @@ if __name__ == '__main__':
                   B151ExtractEphysData(data_path),
                   B151DownsampleEphysData(data_path),
                   B151ExtractArduinoData(data_path),
-                  B151ExtractMotuData(data_path),
+                  #B151ExtractMotuData(data_path),
                   B151EphysNoiseTest(data_path),
                   B151BottomCameraDLC(data_path),
+                  B151KilosortEphysData(data_path),
                   B149fExtractEphysData(data_path),  # B149f
                   B149fDownsampleEphysData(data_path),
                   B149fExtractCiholasData(data_path),
-                  B149fExtractCortexData(data_path)],
+                  B149fExtractCortexData(data_path),
+                  B149fKilosortEphysData(data_path)],
                   workers=4,
                   log_level='INFO',
                   logging_conf_file='logging.conf')
