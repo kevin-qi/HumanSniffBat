@@ -30,7 +30,7 @@ def test_ephys_noise(ephys_extracted_path, out_path):
     eng.addpath(matlab_script_path, nargout=0)
     eng.addpath(q_bats_path, nargout=0)
 
-    print("Running Ephys Noise Test... ")
+    print("Calculating Ephys Power Spectrum.... ")
     res = eng.test_ephys_noise(ephys_extracted_path,out_path,nargout=1)
 
     return res

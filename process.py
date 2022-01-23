@@ -14,7 +14,6 @@ if __name__ == '__main__':
 
     skip_completed = bool(options['--skip-completed'])
     assert type(skip_completed) == type(True), "{} is not a bool".format(skip_completed)
-    print(deps_tree.print_tree(B151EphysNoiseTest(data_path)))
 
     #luigi.build([B149fDownsampleEphysData(data_path),B149fKilosortEphysData(data_path)])
 
@@ -34,10 +33,11 @@ if __name__ == '__main__':
                   B151ExtractEphysData(data_path),
                   B151DownsampleEphysData(data_path),
                   B151ExtractArduinoData(data_path),
-                  #B151ExtractMotuData(data_path),
-                  B151EphysNoiseTest(data_path),
-                  B151BottomCameraDLC(data_path),
+                  B151ExtractMotuData(data_path),
+                  B151EphysPowerSpectrum(data_path),
+                  #B151BottomCameraDLC(data_path),
                   B151KilosortEphysData(data_path),
+                  B149fEphysPowerSpectrum(data_path),
                   B149fExtractEphysData(data_path),  # B149f
                   B149fDownsampleEphysData(data_path),
                   B149fExtractCiholasData(data_path),

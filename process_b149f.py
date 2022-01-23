@@ -13,7 +13,7 @@ import glob
 from distutils import dir_util
 import getopt, sys
 import luigi.tools.deps_tree as deps_tree
-from HumanBat import process_motu, process_arduino, process_ephys, process_video, process_cortex, process_ciholas# b_tests
+from HumanBat import process_motu, process_arduino, process_ephys, process_video, process_cortex, process_ciholas,b151_tests# b_tests
 from HumanBat.qbats.utils import savemat73
 
 
@@ -129,6 +129,33 @@ class B149fExtractEphysData(luigi.Task):
         if(os.path.isdir(os.path.join(self.out_path, 'extracted_data'))):
             print("Overwriting existing {}".format(os.path.join(self.out_path, 'extracted_data')))
         dir_util.copy_tree(os.path.join(self.in_path, 'extracted_data'),self.output().path)
+
+class B149fEphysPowerSpectrum(luigi.Task):
+    data_path = luigi.Parameter()
+
+    with open('./config/config.json', 'r') as f:
+        config = json.load(f)
+        print(config)
+
+    def requires(self):
+        return B149fExtractEphysData(self.data_path), B149fCheckDataIntegrity(self.data_path)
+
+    def output(self):
+        p = os.path.join(os.path.join(self.data_path, 'b149f/ephys/'))
+        p = self.data_path.replace('raw','processed')
+
+        self.in_path = os.path.join(p,'b149f/ephys/extracted_data')
+        self.out_path = os.path.join(p,'b149f/tests/ephys_power_spectrum.jpg')
+
+        Path(os.path.dirname(self.out_path)).mkdir(parents=True, exist_ok=True)
+
+        return luigi.LocalTarget(self.out_path)
+
+    def run(self):
+        # Calculate power spectrum
+        res = b151_tests.test_ephys_noise(self.in_path, self.out_path) # b151_tests.test_ephys_noise is identical to b149f
+        assert res == True, 'Ephys test failed, see {} for test result'.format(self.out_path)
+
 
 class B149fDownsampleEphysData(luigi.Task):
     data_path = luigi.Parameter()

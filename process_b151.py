@@ -245,7 +245,7 @@ class B151BottomCameraDLC(DockerTask.DockerTask):
         return ['/home/batlab/Desktop/HumanBat:/app:z']
 
 
-class B151EphysNoiseTest(luigi.Task):
+class B151EphysPowerSpectrum(luigi.Task):
     data_path = luigi.Parameter()
 
     with open('./config/config.json', 'r') as f:
@@ -260,7 +260,7 @@ class B151EphysNoiseTest(luigi.Task):
         p = self.data_path.replace('raw','processed')
 
         self.in_path = os.path.join(p,'b151/ephys/extracted_data')
-        self.out_path = os.path.join(p,'b151/tests/ephys_noise_test.jpg')
+        self.out_path = os.path.join(p,'b151/tests/ephys_power_spectrum.jpg')
 
         Path(os.path.dirname(self.out_path)).mkdir(parents=True, exist_ok=True)
 
