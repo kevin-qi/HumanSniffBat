@@ -32,6 +32,16 @@ for i = 1:length(c3dList)
     idx = Markers == 0;
     Markers(idx) = NaN;
     avgMarkerPos = squeeze(nanmean(Markers,2));
-    save([processed_dir fileName '_track' '.mat'],'AnalogFrameRate','AnalogSignals','Markers','VideoFrameRate', 'avgMarkerPos','ttl_risetime');
+
+    %------------Local2GlobalTime-----------------
+    local_ttl_usec = ttl_risetime*1e6;
+    global_ttl_interval_usec = 3e6;
+    local_sample_t0_usec = 0;%1e6/VideoFrameRate; % t0 starts at first frame?
+    local_sample_ts_usec = linspace(local_sample_t0_usec, local_sample_t0_usec+(length(AnalogSignals)-1)*(1e6/VideoFrameRate), length(AnalogSignals));
+    global_sample_ts_usec = local2GlobalTime(local_ttl_usec, local_sample_ts_usec, 'global_ttl_interval_us', 3e6);
+    %---------------------------------------------
+    
+    % Save data
+    save([processed_dir fileName '_track' '.mat'],'AnalogFrameRate','AnalogSignals','Markers','VideoFrameRate', 'avgMarkerPos','global_sample_ts_usec');
     %save([copy_dir fileName '_track' '.mat'],'AnalogFrameRate','AnalogSignals','Markers','VideoFrameRate');
 end

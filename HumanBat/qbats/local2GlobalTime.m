@@ -35,7 +35,7 @@ function [global_sample_timestamps_usec] = local2GlobalTime(local_ttl_ts_us, loc
 
 defaultTTLInterval = 3e6; % 3 sec TTL
 
-% Input parser
+% -------------------------- Input parser --------------------------
 p = inputParser;
 addRequired(p,'local_ttl_ts_us');
 addRequired(p,'local_sample_ts_us');
@@ -45,6 +45,11 @@ parse(p,local_ttl_ts_us,local_sample_ts_us,varargin{:});
 
 global_ttl_interval_us = p.Results.global_ttl_interval_us;
 custom_global_ttl_ts_us = p.Results.custom_global_ttl_ts_us;
+% ------------------------------------------------------------------
+
+
+
+% ------------------------- Interpolation -------------------------
 num_ttl = length(local_ttl_ts_us); % Total number of TTLs
 local_ttl_t0 = local_ttl_ts_us(1); % First local TTL timestamp in usec
 if(custom_global_ttl_ts_us == 0) % If no custom global TTL defined
@@ -61,6 +66,9 @@ global_sample_ts_us = interp1(local_ttl_ts_us,global_ttl_ts_us,local_sample_ts_u
 
 global_sample_timestamps_usec = global_sample_ts_us;
 global_sample_timestamps_usec = global_sample_timestamps_usec - global_ttl_ts_us(1);
+% ------------------------------------------------------------------
+
+
 
 % Plot interpolation results
 figure;
