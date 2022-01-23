@@ -160,7 +160,7 @@ class B151KilosortEphysData(luigi.Task):
     data_path = luigi.Parameter()
 
     def requires(self):
-        return (B151CheckDataIntegrity(self.data_path), B151ExtractEphysData(self.data_path))
+        return (B151CheckDataIntegrity(self.data_path), B151ExtractEphysData(self.data_path), B151DownsampleEphysData(self.data_path))
 
     def output(self):
         # Get logger directory path
