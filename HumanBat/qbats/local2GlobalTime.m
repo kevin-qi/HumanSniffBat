@@ -68,6 +68,7 @@ global_sample_timestamps_usec = global_sample_ts_us;
 global_sample_timestamps_usec = global_sample_timestamps_usec - global_ttl_ts_us(1);
 % ------------------------------------------------------------------
 
+close all
 
 
 % Plot interpolation results
