@@ -13,6 +13,7 @@ from distutils import dir_util
 import getopt, sys
 import luigi.tools.deps_tree as deps_tree
 from HumanBat import process_motu, process_arduino, process_ephys, process_video, b151_tests, DockerTask
+from process_b149f import *
 from HumanBat.qbats.utils import savemat73
 
 class B151CheckDataIntegrity(luigi.Task):
@@ -182,7 +183,7 @@ class B151ExtractCameraData(luigi.Task):
         config = json.load(f)
 
     def requires(self):
-        return B151CheckDataIntegrity(self.data_path)
+        return (B151CheckDataIntegrity(self.data_path), B151KilosortEphysData(self.data_path), B149fKilosortEphysData(self.data_path))
 
     def output(self):
         # Get camera data path

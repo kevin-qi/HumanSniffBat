@@ -5,11 +5,14 @@ import scipy.signal
 def load_motu_data(motu_path):
     motu_data = []
     num_files = len(os.listdir(motu_path))
+    print("loading audio data...")
     for i in range(num_files):
-        data = np.load(os.path.join(motu_path,'audio_{}.npy'.format(i)))
+        try: # Try block handles the occasional error where the last data block is not saved properly.
+            data = np.load(os.path.join(motu_path,'audio_{}.npy'.format(i)))
+            motu_data.append(data)
+        except ValueError as e:
+            print(e)
         #data_ds = scipy.signal.decimate(data, 5)
-        data_ds = data
-        motu_data.append(data_ds)
 
     motu_data = np.hstack(motu_data)
     return motu_data
