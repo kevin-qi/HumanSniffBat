@@ -25,5 +25,10 @@ disp(strcat("Total Distance Flown:"," ",num2str(total_distance_flown)," ","meter
 disp(strcat("Longest Flight:"," ",num2str(longest_flight)," ","meters."));
 disp(strcat("Shortest Flight:"," ",num2str(shortest_flight)," ","meters."))
 
+% Plot a timeline of when the flights were flown
+binaryFlightVector = zeros(1,length(AnalogSignals));
+binaryFlightVector(out.flight_starts_indx)=1;
+figure(); stem(binaryFlightVector); title("Timeline of Flights during session");
+
 % Sort the flights
-flightPaths = HumanBat_ClusterFlights(out)
+flightPaths = HumanBat_ClusterFlights(out);

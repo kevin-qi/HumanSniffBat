@@ -1,13 +1,20 @@
+% Run in the directory of audiofiles. Will concatenate the audio of an
+% uninterrupted TTL into a large file for later processing/echolcoation
+% extraction and alignment with flight data. 
+
 filePath = [pwd filesep]; 
 fileParts = fileparts(filePath); Date = fileParts(end-24:end-19);
 
 plotFlag = 0;
-lastFileNum = length(dir([filePath '_' Date '_audio_trial_*']))-1;
+lastFileNum = length(dir([filePath '_' Date '_audio_trial_*']));
 if plotFlag == 1
     figure();
 end
 
-% Detect which files actually have TTLs in them.
+% Each audiofile is approximatly 12 seconds of data.
+
+
+% Detect starting file that actually has TTL
 for i=1:lastFileNum
     temp_file = load([filePath '_' Date '_audio_trial_' num2str(i)]);
     disp(strcat("Checking if file"," ",num2str(i)," ","contains the first TTL"))
@@ -20,13 +27,19 @@ for i=1:lastFileNum
     end
 end
 
+ttlProcessFlag=0;
 for mic_i = 1%:4
+    if mic_i == 1
+        ttlProcessFlag = 1;
+        disp(strcat("Concatening TTLs"));
+    end
     disp(strcat("Concatening audio for Mic "," ",num2str(mic_i)));
-    clear audioConCat; 
+    clear audioConCat; clear ttlConCat;
     fileFirst = load([filePath '_' Date '_audio_trial_' num2str(firstFileIdx)]);
     ttlConCat = fileFirst.recbuf(:,end);
     audioConCat = fileFirst.recbuf(:,mic_i);
     TTL_break_counter = 0;
+    noTTLfiles = [];
     for file_i = firstFileIdx:lastFileNum
         
         if mod(file_i,10) == 0
@@ -48,7 +61,6 @@ for mic_i = 1%:4
              
             % Chunk the audio concatination here and start another file. 
             try
-                TTL_break_counter = TTL_break_counter+1;
                 % confirm the ttl are lined up correctly every 3 seconds
                 [R,LTall,UT,LL,UL] = risetime(ttlConCat,fs);
                 figure();
@@ -62,8 +74,12 @@ for mic_i = 1%:4
                 % Plot the concatentated TTLs up to that point
                 figure(); plot(ttlConCat);
                 % Save this chunk and clear audioConcat and ttlConCat
-                save(strcat('audioConCat_mic_',num2str(mic_i),'_segment_',num2str(TTL_break_counter)),'audioConCat');
+                save(strcat('audioConCat_mic_',num2str(mic_i),'_segment_',num2str(TTL_break_counter)),'audioConCat','-v7.3');
+                if ttlProcessFlag==1
+                    save(strcat('ttlConCat_segment_',num2str(TTL_break_counter)),'ttlConCat','-v7.3');
+                end
                 clear audioConCat ttlConCat audioConCat_segment ttlConCat_segment;
+                TTL_break_counter = TTL_break_counter+1;
 
                 % Re-initialize matrixes
                 fileFirst = [];
@@ -167,7 +183,10 @@ for mic_i = 1%:4
     micObj = audioplayer(audioConCat,fs);
     play(micObj);
     %pause
-    save(strcat('audioConCat_',num2str(mic_i)),'audioConCat');
+    save(strcat('audioConCat_',num2str(mic_i)),'audioConCat','-v7.3');
+    if ttlProcessFlag==1
+        save('ttlConCat','ttlConCat','-v7.3');
+    end
 end
 
 % Pass the concatenated data to 

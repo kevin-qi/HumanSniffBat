@@ -9,7 +9,7 @@ seconds = size(audioConCat,1)/fs;
 two_minutes = ceil(seconds/120);
 echolocation_idxs = [];   
 
-for i=14:two_minutes-1
+for i=8:two_minutes-1
     clear pks locs;
     if i==two_minutes-1
         short_seg = audioConCat(120*(i-1)*fs+1:end);
@@ -67,7 +67,7 @@ for i=14:two_minutes-1
 %     
 %     % Plot spectrograms of raw shorter_seg data
     figure('name', 'Raw Data'); 
-    [IMAGE,F,T] = fb_pretty_sonogram(shorter_seg./abs(max(shorter_seg)),fs,'low',2.9,'zeropad',0);
+    [IMAGE,F,T] = fb_pretty_sonogram(short_seg./abs(max(short_seg)),fs,'low',2.9,'zeropad',0);
     colormap(hot)
     imagesc(T,F,log(abs(IMAGE)+1e+2));set(gca,'YDir','normal');
     ylabel('kHz')
