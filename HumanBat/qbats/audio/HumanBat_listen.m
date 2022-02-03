@@ -1,6 +1,6 @@
 function HumanBat_listen(audioclip)
 
-    % Plays raw audio clip (.mat in audio folder from B149f or B151)
+    % Plays raw audio clip ( .mat in audio folder from B149f or B151)
     % Saves manual input notes about contents of audio matfile to a .mat
     % for later curation (filename_e.mat indicates this clip has an
     % echolocation)

@@ -1,5 +1,5 @@
 % Investigating the mic data
-
+ 
 load('audioConCat_test_seg.mat');
 figure(); plot(audioConCat);
 Ge200305_small_seg = audioConCat(200000000:220000000);

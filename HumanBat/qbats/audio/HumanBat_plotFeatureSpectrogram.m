@@ -1,4 +1,4 @@
-function HumanBat_plotFeatureSpectrogram(audio_clip)
+function HumanBat_plotFeatureSpectrogram(audio_clip) 
 
     % Plot all the SAP features using Ofer's toolbox from an audioclip
 

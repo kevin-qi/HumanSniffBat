@@ -2,7 +2,7 @@ function [globalMicTime] = HumanBat_extractGlobalAudio(audioConCat,ttlConCat,var
 
 %% Find global time for the audio data stream in b149f
 
-% The sync signal is driven by a TTL on channel 6 of the recbuf in the
+% The sync signal is driven by a TTL on channel 6 of the recbuf in the  
 % audiofile
 % fsAudio = 192000 MOTU
 % fsCortex = 120

@@ -4,7 +4,7 @@ function HumanBat_extractGlobalAudio(audio_clip,audio_loaded,ttl_clip,ttl_loaded
 % The sync signal is driven by a TTL on channel 6 of the recbuf in the
 % audiofile
 % fsAudio = 192000 MOTU
-% fsCortex = 120
+% fsCortex = 120 
 %-----------------------------------------------------------------
 
 %   *********USAGE EXAMPLES*****************

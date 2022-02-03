@@ -31,4 +31,4 @@ binaryFlightVector(out.flight_starts_indx)=1;
 figure(); stem(binaryFlightVector); title("Timeline of Flights during session");
 
 % Sort the flights
-flightPaths = HumanBat_ClusterFlights(out);
+flightPaths = HumanBat_ClusterFlights(out,AnalogSignals);

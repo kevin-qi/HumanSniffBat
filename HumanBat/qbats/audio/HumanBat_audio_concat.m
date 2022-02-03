@@ -2,7 +2,7 @@
 % uninterrupted TTL into a large file for later processing/echolcoation
 % extraction and alignment with flight data. 
 
-filePath = [pwd filesep]; 
+filePath = [pwd filesep];  
 fileParts = fileparts(filePath); Date = fileParts(end-24:end-19);
 
 plotFlag = 0;
@@ -92,6 +92,45 @@ for mic_i = 1%:4
             % Add this file to the number of files that don't have TTLs
             noTTLfiles = [noTTLfiles,file_i];
             continue
+
+        elseif max(fileNext.recbuf(:,end)) < 0.1
+            % If no ttls, log that this file doesn't contain any and skip
+            % to the next ttl. Chunk the audiofile here.
+            disp(strcat("File"," ",num2str(file_i+1)," ","contains no TTLs"));
+             
+            % Chunk the audio concatination here and start another file. 
+            try
+                % confirm the ttl are lined up correctly every 3 seconds
+                [R,LTall,UT,LL,UL] = risetime(ttlConCat,fs);
+                figure();
+                plot(LTall,1:length(LTall));
+                title('TTL pulses every 3 seconds');
+                % plot the mic trace concatenated based off ttl pulses
+                [R,LTmic1,UT,LL,UL] = risetime(audioConCat);
+                LTmic1 = LTmic1/fs;
+                [b,a] = butter(3,5000/(fs/2),'high');
+                audioFilt = filtfilt(b,a,audioConCat);
+                % Plot the concatentated TTLs up to that point
+                figure(); plot(ttlConCat);
+                % Save this chunk and clear audioConcat and ttlConCat
+                save(strcat('audioConCat_mic_',num2str(mic_i),'_segment_',num2str(TTL_break_counter)),'audioConCat','-v7.3');
+                if ttlProcessFlag==1
+                    save(strcat('ttlConCat_segment_',num2str(TTL_break_counter)),'ttlConCat','-v7.3');
+                end
+                clear audioConCat ttlConCat audioConCat_segment ttlConCat_segment;
+                TTL_break_counter = TTL_break_counter+1;
+
+                % Re-initialize matrixes
+                fileFirst = [];
+                ttlConCat = [];
+                audioConCat = [];
+            catch
+                continue
+            end
+    
+            % Add this file to the number of files that don't have TTLs
+            noTTLfiles = [noTTLfiles,file_i];
+            continue   
         else        
             fs=fileCur.fs;
             event_ttls_cur = fileCur.recbuf(:,end); %trial data for current file
@@ -121,8 +160,13 @@ for mic_i = 1%:4
                 continue;
             else
                 %concatenate the ttl and audio streams
-                ttlConCat = vertcat(ttlConCat,event_ttls_next(cutOut+1:end));
-                audioConCat = vertcat(audioConCat,audioMicNext(cutOut+1:end));
+                try
+                    ttlConCat = vertcat(ttlConCat,event_ttls_next(cutOut+1:end));
+                    audioConCat = vertcat(audioConCat,audioMicNext(cutOut+1:end));
+                catch
+                    disp("something wrong with concatenating ttls or audio stream");
+                    continue;
+                end
             end
     
             if plotFlag == 1

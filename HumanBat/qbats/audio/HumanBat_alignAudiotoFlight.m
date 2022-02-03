@@ -4,7 +4,7 @@ function HumanBat_alignAudiotoFlight(DATE)
 track_file = strcat(pwd,'/data/processed/',DATE,'/b149f/cortex/',DATE,'_14592_tracking_1_track.mat');
 load(track_file);
 
-% Get global cortex time if needed
+% Get global cortex time if needed 
 [globalCortexTime] = HumanBat_extractGlobalCortex(track_file);
 
 % Load in audio data (ttl and mic)

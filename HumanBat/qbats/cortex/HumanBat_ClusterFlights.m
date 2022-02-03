@@ -1,4 +1,4 @@
-function [flightPaths] = HumanBat_ClusterFlights(out)
+function [flightPaths] = HumanBat_ClusterFlights(out,AnalogSignals)
     
     % Uses heirarchical clustering to cluster the flights
 
@@ -15,7 +15,15 @@ function [flightPaths] = HumanBat_ClusterFlights(out)
     % Filter and interpolate
     x_filt = medfilt1(x_mean,VideoFrameRate/2,[],2,'omitnan','truncate'); %filter after interpolating
     x_intr = fillmissing(x_filt,'next',2,'EndValues','nearest');
-    x_spl = x_intr; 
+    %x_spl = x_intr;
+    x_spl_pre = x_intr;
+    x_spl_1 = smooth(x_spl_pre(1,:),VideoFrameRate/2);     x_spl_2 = smooth(x_spl_pre(2,:),VideoFrameRate/2);      x_spl_3 = smooth(x_spl_pre(3,:),VideoFrameRate/2); 
+    x_spl = [x_spl_1,x_spl_2,x_spl_3]';
+
+
+    %x_filt = x_mean;
+    %x_intr = x_mean;
+    %x_spl = x_mean;
 
     %threshold based on speed
     Vx = gradient(x_spl(1,:), 1/VideoFrameRate);
@@ -124,12 +132,12 @@ function [flightPaths] = HumanBat_ClusterFlights(out)
     %% Clustering flights
 
     % Clustering params
-    ds_clus = 6;                                                                %number of 3D-points/flight for clustering 
+    ds_clus = 25;                                                                %number of 3D-points/flight for clustering 
     %madeleine 25 splines, PCA+, 1m linkage
     %angelo 6 splines, PCA-, 0.7m linakge, min 5 
     pca_features = false;                                                       %if using PCA
     k_means = false;                                                            %if using k-means
-    dist = 4.5;                                                                 %linkage distance
+    dist = 1.8;                                                                 %linkage distance
     reassign = true;                                                            %re-order clusters according to density
     N_min = 3; 
     day_index=1;
@@ -148,10 +156,10 @@ function [flightPaths] = HumanBat_ClusterFlights(out)
         all_flights_ds(:,:,nf) = interp1(linspace(1,3,size(trajectory,2)),trajectory',linspace(1,3,ds_clus),'spline')';
         
         %     %Uncomment if you want to see how the downsampled flights look like
-        %     plot3(all_flights(1,:,nf),all_flights(2,:,nf),all_flights(3,:,nf),'Color','b');
-        %     hold on;
-        %     plot3(all_flights_ds(1,:,nf),all_flights_ds(2,:,nf),all_flights_ds(3,:,nf),'Color','r');
-        %     hold off;
+            plot3(all_flights(1,:,nf),all_flights(2,:,nf),all_flights(3,:,nf),'Color','b');
+            hold on;
+            plot3(all_flights_ds(1,:,nf),all_flights_ds(2,:,nf),all_flights_ds(3,:,nf),'Color','r');
+            hold off;
         %     w = waitforbuttonpress;
     end
     
@@ -178,7 +186,7 @@ function [flightPaths] = HumanBat_ClusterFlights(out)
     end
 
     % HDBSCAN (see Humanbat_HDBSCAN_Playground.m)
-    hdbscan_clusterer = HDBSCAN(X)
+    %hdbscan_clusterer = HDBSCAN(X)
     
     % Create structure with flight start stop frames, id of the trajectory
     clear flight;
@@ -214,7 +222,7 @@ function [flightPaths] = HumanBat_ClusterFlights(out)
     flightPaths.vel = flight_sorted.vel;
     flightPaths.Fs = flight_sorted.Fs;
     flightPaths.N = flight_sorted.N;
-    flightPaths.day = day_index(flightPaths.flight_starts_idx);% this is the day index...
+    %flightPaths.day = day_index(flightPaths.flight_starts_idx);% this is the day index...
     
     for jj=1:n_surv_clusters;
         flightPaths.id(flight_sorted.id == id_surv_clusters(jj)) = jj;

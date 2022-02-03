@@ -1,4 +1,4 @@
-function HumanBat_plotSpectrogram(audio_clip,audio_loaded)
+function HumanBat_plotSpectrogram(audio_clip,audio_loaded) 
 
     % Plot a pretty spectrogram of an audioclip .mat file from the audio
     % directory from B149f or B151
