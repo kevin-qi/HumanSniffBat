@@ -137,7 +137,7 @@ function [flightPaths] = HumanBat_ClusterFlights(out,AnalogSignals)
     %angelo 6 splines, PCA-, 0.7m linakge, min 5 
     pca_features = false;                                                       %if using PCA
     k_means = false;                                                            %if using k-means
-    dist = 1.8;                                                                 %linkage distance
+    dist = 1.5;                                                                 %linkage distance
     reassign = true;                                                            %re-order clusters according to density
     N_min = 3; 
     day_index=1;

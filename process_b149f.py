@@ -185,7 +185,7 @@ class B149fKilosortEphysData(luigi.Task):
         config = json.load(f)
 
     def requires(self):
-        return (B149fCheckDataIntegrity(self.data_path), B149fExtractEphysData(self.data_path))
+        return (B149fCheckDataIntegrity(self.data_path), B149fDownsampleEphysData(self.data_path))
 
     def output(self):
         # Get logger directory path
