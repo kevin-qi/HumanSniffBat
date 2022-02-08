@@ -66,7 +66,7 @@ class B149fExtractCiholasData(luigi.Task):
 
     def run(self):
         tag_1_sn = self.config['b149f']['ciholas']['tag_1']['serial_number']
-        tag_2_sn = self.config['b149f']['ciholas']['tag_1']['serial_number']
+        tag_2_sn = self.config['b149f']['ciholas']['tag_2']['serial_number']
         tag_SNs = [tag_1_sn, tag_2_sn]
         process_ciholas.extract_ciholas(self.in_file, tag_SNs)
         dir_util.copy_tree(os.path.join(self.in_path),self.out_path)
