@@ -2,8 +2,8 @@
 
 % load data
 ciholas2cortex = load('ciholas2cortex_scaling_factors.mat').ciholas2cortex;
-ciholas_data = load('/home/batlab/Desktop/HumanBat/data/14592/processed/220123/b149f/ciholas/extracted_220123_cdp_1.mat')
-cortex_data = load('/home/batlab/Desktop/HumanBat/data/14592/processed/220123/b149f/cortex/220123_14592_tracking_1_track.mat')
+%ciholas_data = load('/home/batlab/Desktop/HumanBat/data/14592/processed/220123/b149f/ciholas/extracted_220123_cdp_1.mat')
+%cortex_data = load('/home/batlab/Desktop/HumanBat/data/14592/processed/220123/b149f/cortex/220123_14592_tracking_1_track.mat')
 
 alignedCiholasCortex = HumanBat_alignCiholasCortex(cortex_data,ciholas_data,ciholas2cortex); % align ciholas with cortex
 cortex = alignedCiholasCortex.cortex;
