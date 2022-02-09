@@ -14,16 +14,11 @@ function [flightPaths] = HumanBat_ClusterFlights(out,AnalogSignals)
     %% Re-extract trajectories
     % Filter and interpolate
     x_filt = medfilt1(x_mean,VideoFrameRate/2,[],2,'omitnan','truncate'); %filter after interpolating
-    x_intr = fillmissing(x_filt,'next',2,'EndValues','nearest');
+    x_intr = HumanBat_interpolate_nans(x_filt);%  fillmissing(x_filt,'next',2,'EndValues','nearest');
     %x_spl = x_intr;
     x_spl_pre = x_intr;
     x_spl_1 = smooth(x_spl_pre(1,:),VideoFrameRate/2);     x_spl_2 = smooth(x_spl_pre(2,:),VideoFrameRate/2);      x_spl_3 = smooth(x_spl_pre(3,:),VideoFrameRate/2); 
     x_spl = [x_spl_1,x_spl_2,x_spl_3]';
-
-
-    %x_filt = x_mean;
-    %x_intr = x_mean;
-    %x_spl = x_mean;
 
     %threshold based on speed
     Vx = gradient(x_spl(1,:), 1/VideoFrameRate);
@@ -142,8 +137,6 @@ function [flightPaths] = HumanBat_ClusterFlights(out,AnalogSignals)
     N_min = 3; 
     day_index=1;
 
-
-
     %Cut out flights, downsample to ds_clus positions per flight
     all_flights = NaN(3,max(flight_ends-flight_starts),num_flights);    %3D matrix with all flights
     all_flights_ds = NaN(3,ds_clus,num_flights);                        %3D matrix with all flights(downsampled)
@@ -256,7 +249,7 @@ function [flightPaths] = HumanBat_ClusterFlights(out,AnalogSignals)
     %add Tobias specific variables for future plots
     flightPaths.trajectoriesContinous = x_intr;
     flightPaths.trajectoriesSpline = x_spl;
-    flightPaths.tracjectoriesRaw = x_mean;
+    flightPaths.trajectoriesRaw = x_mean;
     flightPaths.batSpeed = speed';
     flightPaths.flight_starts_xyz = flightPaths.pos(:,1,:); %starting position of each flight
     flightPaths.flight_ends_xyz = zeros(length(flightPaths.pos(1,1,:)),3); %make matrix for landing position for each flight 
