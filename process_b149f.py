@@ -180,6 +180,7 @@ class B149fDownsampleEphysData(luigi.Task):
 
 class B149fKilosortEphysData(luigi.Task):
     data_path = luigi.Parameter()
+    resources = {"gpu": 1} # Uses GPU resources. Prevents multiple tasks from simultaneously using GPU
 
     with open('./config/config.json', 'r') as f:
         config = json.load(f)

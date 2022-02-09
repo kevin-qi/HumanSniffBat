@@ -159,6 +159,7 @@ class B151DownsampleEphysData(luigi.Task):
 
 class B151KilosortEphysData(luigi.Task):
     data_path = luigi.Parameter()
+    resources = {"gpu": 1} # Uses GPU resources. Prevents multiple tasks from simultaneously using GPU
 
     def requires(self):
         return (B151CheckDataIntegrity(self.data_path), B151ExtractEphysData(self.data_path), B151DownsampleEphysData(self.data_path))
@@ -183,7 +184,7 @@ class B151ExtractCameraData(luigi.Task):
         config = json.load(f)
 
     def requires(self):
-        return (B151CheckDataIntegrity(self.data_path), B151KilosortEphysData(self.data_path), B149fKilosortEphysData(self.data_path))
+        return (B151CheckDataIntegrity(self.data_path))
 
     def output(self):
         # Get camera data path
@@ -202,6 +203,7 @@ class B151ExtractCameraData(luigi.Task):
 
 class B151BottomCameraDLC(DockerTask.DockerTask):
     data_path = luigi.Parameter()
+    resources = {"gpu": 1} # Uses GPU resources. Prevents multiple tasks from simultaneously using GPU
 
     with open('./config/config.json', 'r') as f:
         config = json.load(f)
@@ -228,7 +230,7 @@ class B151BottomCameraDLC(DockerTask.DockerTask):
 
     @property
     def auto_remove(self):
-        return False
+        return True
 
     def output(self):
         return luigi.LocalTarget(os.path.join(self.data_path.replace('raw', 'processed'),'b151/cameras/done.npy'))
