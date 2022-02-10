@@ -17,6 +17,17 @@ if __name__ == '__main__':
 
     #luigi.build([B149fDownsampleEphysData(data_path),B149fKilosortEphysData(data_path)])
 
+
+    luigi.build([B149fCheckDataIntegrity(data_path), 
+                  B149fEphysPowerSpectrum(data_path),
+                  B149fExtractEphysData(data_path),  # B149f
+                  B149fDownsampleEphysData(data_path),
+                  B149fExtractCiholasData(data_path),
+                  B149fExtractCortexData(data_path),
+                  B149fKilosortEphysData(data_path)],
+                  workers=8,
+                  log_level='INFO')
+
     """
     luigi.build([B149fExtractEphysData(data_path),  # B149f
                  B149fDownsampleEphysData(data_path),
@@ -26,7 +37,7 @@ if __name__ == '__main__':
                  B151DownsampleEphysData(data_path),
                  B149fExtractCiholasData(data_path)],
                  workers=4,
-                 log_level='INFO'))"""
+                 log_level='INFO'))
 
     luigi.build([B151CheckDataIntegrity(data_path), # B151
                   B151ExtractCameraData(data_path),
@@ -44,4 +55,4 @@ if __name__ == '__main__':
                   B149fExtractCortexData(data_path),
                   B149fKilosortEphysData(data_path)],
                   workers=8,
-                  log_level='INFO')
+                  log_level='INFO')"""

@@ -25,27 +25,28 @@ class B149fCheckDataIntegrity(luigi.Task):
         config = json.load(f)
 
     def output(self):
-        return None
+        return luigi.LocalTarget(os.path.join(self.data_path,'good_integrity.npy'))
 
-    def complete(self):
-        return True#self.task_complete
 
     def run(self):
         ephys_path = os.path.join(self.data_path, 'b149f/ephys')
-        logger_dirs = os.listdir(ephys_path)
-
-        assert len(logger_dirs) == 1, "Data Integrity Error: Multiple logger folders found in {}".ephys_path
 
         # EVENTLOG.CSV exists (extracted by EVENT_FILE_READER.EXE from NEURALYNX)
+        dirs = [a for a in os.listdir(ephys_path) if os.path.isdir(os.path.join(ephys_path,a))]
+
+        r = re.compile("(.*\d\d)")
+        logger_dirs = list(filter(r.match, dirs))
+        print("logger directories found: {}".format(logger_dirs))
+        assert len(logger_dirs) == 1, "There should only be 1 logger folder! Found {}".format(logger_dirs)
         assert os.path.exists(os.path.join(ephys_path, logger_dirs[0], 'EVENTLOG.CSV')), "Data Integrity Error: EVENTLOG.CSV not found. Did you remember to extract it?"
 
         # TODO: Check number of NEUR____.DAT files match expected number in EVENTLOG.CSV
 
-        # Check arduino logs exist
-        session_name = Path(self.data_path).name
-        assert os.path.exists(os.path.join(self.data_path, 'b149f/{}_logs.txt'.format(session_name)))
+        # Checking ciholas data file is proper
+        process_ciholas.check_ciholas_integrity(os.path.join(self.data_path,'b149f/ciholas'), 9000000)
 
         self.task_complete = True
+        np.save(os.path.join(self.data_path,'good_integrity.npy'), np.array([1]))
 
 class B149fExtractCiholasData(luigi.Task):
     data_path = luigi.Parameter()
@@ -99,8 +100,8 @@ class B149fExtractEphysData(luigi.Task):
     with open('./config/config.json', 'r') as f:
         config = json.load(f)
 
-    #def requires(self):
-    #    return B149fCheckDataIntegrity(self.data_path)
+    def requires(self):
+        return B149fCheckDataIntegrity(self.data_path)
 
     def output(self):
         # Get logger directory path
@@ -109,8 +110,6 @@ class B149fExtractEphysData(luigi.Task):
 
         r = re.compile("(.*\d\d)")
         logger_dirs = list(filter(r.match, dirs))
-        print("logger directories found: {}".format(logger_dirs))
-        assert len(logger_dirs) == 1, "There should only be 1 logger folder! Found {}".format(logger_dirs)
         self.in_path = os.path.join(self.in_path, logger_dirs[0])
 
         # Create output path

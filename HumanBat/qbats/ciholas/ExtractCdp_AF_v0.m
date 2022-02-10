@@ -29,7 +29,7 @@ fn = parts(end);
 fn = fn{1}(1:end-4);
 disp([parent_path, '/extracted_', fn, '.mat'])
 
-RTLS_data = load(file_name);
+RTLS_data = importdata(file_name);%load(file_name);
 RTLS_data = RTLS_data(RTLS_data(:,2)~=0,:);
 RTLS_data = sortrows(RTLS_data,3);
 RTLS_data = unique(RTLS_data,'rows','stable');
