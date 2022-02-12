@@ -40,7 +40,7 @@ for mic_i = 1%:4
     audioConCat = fileFirst.recbuf(:,mic_i);
     TTL_break_counter = 0;
     noTTLfiles = [];
-    for file_i = firstFileIdx:lastFileNum
+    for file_i = firstFileIdx:lastFileNum-1
         
         if mod(file_i,10) == 0
             disp(strcat("File"," ",num2str(file_i)));
@@ -62,17 +62,17 @@ for mic_i = 1%:4
             % Chunk the audio concatination here and start another file. 
             try
                 % confirm the ttl are lined up correctly every 3 seconds
-                [R,LTall,UT,LL,UL] = risetime(ttlConCat,fs);
-                figure();
-                plot(LTall,1:length(LTall));
-                title('TTL pulses every 3 seconds');
+                %[R,LTall,UT,LL,UL] = risetime(ttlConCat,fs);
+                %figure();
+                %plot(LTall,1:length(LTall));
+                %title('TTL pulses every 3 seconds');
                 % plot the mic trace concatenated based off ttl pulses
-                [R,LTmic1,UT,LL,UL] = risetime(audioConCat);
-                LTmic1 = LTmic1/fs;
-                [b,a] = butter(3,5000/(fs/2),'high');
-                audioFilt = filtfilt(b,a,audioConCat);
+                %[R,LTmic1,UT,LL,UL] = risetime(audioConCat);
+                %LTmic1 = LTmic1/fs;
+                %[b,a] = butter(3,5000/(fs/2),'high');
+                %audioFilt = filtfilt(b,a,audioConCat);
                 % Plot the concatentated TTLs up to that point
-                figure(); plot(ttlConCat);
+                %figure(); plot(ttlConCat);
                 % Save this chunk and clear audioConcat and ttlConCat
                 save(strcat('audioConCat_mic_',num2str(mic_i),'_segment_',num2str(TTL_break_counter)),'audioConCat','-v7.3');
                 if ttlProcessFlag==1
@@ -101,17 +101,17 @@ for mic_i = 1%:4
             % Chunk the audio concatination here and start another file. 
             try
                 % confirm the ttl are lined up correctly every 3 seconds
-                [R,LTall,UT,LL,UL] = risetime(ttlConCat,fs);
-                figure();
-                plot(LTall,1:length(LTall));
-                title('TTL pulses every 3 seconds');
+                %[R,LTall,UT,LL,UL] = risetime(ttlConCat,fs);
+                %figure();
+                %plot(LTall,1:length(LTall));
+                %title('TTL pulses every 3 seconds');
                 % plot the mic trace concatenated based off ttl pulses
-                [R,LTmic1,UT,LL,UL] = risetime(audioConCat);
-                LTmic1 = LTmic1/fs;
-                [b,a] = butter(3,5000/(fs/2),'high');
-                audioFilt = filtfilt(b,a,audioConCat);
+                %[R,LTmic1,UT,LL,UL] = risetime(audioConCat);
+                %LTmic1 = LTmic1/fs;
+                %[b,a] = butter(3,5000/(fs/2),'high');
+                %audioFilt = filtfilt(b,a,audioConCat);
                 % Plot the concatentated TTLs up to that point
-                figure(); plot(ttlConCat);
+                %figure(); plot(ttlConCat);
                 % Save this chunk and clear audioConcat and ttlConCat
                 save(strcat('audioConCat_mic_',num2str(mic_i),'_segment_',num2str(TTL_break_counter)),'audioConCat','-v7.3');
                 if ttlProcessFlag==1
@@ -203,33 +203,37 @@ for mic_i = 1%:4
     end
     
     %confirm the ttl are lined up correctly every 3 seconds
-    [R,LTall,UT,LL,UL] = risetime(ttlConCat,fs);
-    figure();
-    plot(LTall,1:length(LTall),'*');
-    title('TTL pulses every 3 seconds');
-    %plot the mic trace concatenated based off ttl pulses
-    [R,LTmic1,UT,LL,UL] = risetime(audioConCat);
-    LTmic1 = LTmic1/fs;
-    [b,a] = butter(3,5000/(fs/2),'high');
-    audioFilt = filtfilt(b,a,audioConCat);
-%     figure();
-%     plot(1:length(audioFilt),audioFilt);
-%     title(['Mic ' num2str(mic_i) ' Filered']);
-%     figure();
-%     plot(1:length(audioConCat),audioConCat);
-%     title(['Mic ' num2str(mic_i) ' raw']);
-%     drawnow
-    % hold on;
-    % for i = 1:length(LTmic1)
-    %     plot(LTmic1(i)*fs,0,'o')
-    % end
-    %play concatenated sound
-    micObj = audioplayer(audioConCat,fs);
-    play(micObj);
-    %pause
-    save(strcat('audioConCat_',num2str(mic_i)),'audioConCat','-v7.3');
-    if ttlProcessFlag==1
-        save('ttlConCat','ttlConCat','-v7.3');
+    if ~isempty(audioConCat)
+        [R,LTall,UT,LL,UL] = risetime(ttlConCat,fs);
+        figure();
+        plot(LTall,1:length(LTall),'*');
+        title('TTL pulses every 3 seconds');
+        %plot the mic trace concatenated based off ttl pulses
+        [R,LTmic1,UT,LL,UL] = risetime(audioConCat);
+        LTmic1 = LTmic1/fs;
+        [b,a] = butter(3,5000/(fs/2),'high');
+        %audioFilt = filtfilt(b,a,audioConCat);
+    %     figure();
+    %     plot(1:length(audioFilt),audioFilt);
+    %     title(['Mic ' num2str(mic_i) ' Filered']);
+    %     figure();
+    %     plot(1:length(audioConCat),audioConCat);
+    %     title(['Mic ' num2str(mic_i) ' raw']);
+    %     drawnow
+        % hold on;
+        % for i = 1:length(LTmic1)
+        %     plot(LTmic1(i)*fs,0,'o')
+        % end
+        %play concatenated sound
+        micObj = audioplayer(audioConCat,fs);
+        play(micObj);
+        %pause
+        save(strcat('audioConCat_',num2str(mic_i)),'audioConCat','-v7.3');
+        if ttlProcessFlag==1
+            save('ttlConCat','ttlConCat','-v7.3');
+        end
+    else
+        disp("End")
     end
 end
 
