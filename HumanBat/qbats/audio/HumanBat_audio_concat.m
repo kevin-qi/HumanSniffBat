@@ -3,6 +3,8 @@ function [] = HumanBat_audio_concat(filePath)
     % Run in the directory of audiofiles. Will concatenate the audio of an
     % uninterrupted TTL into a large file for later processing/echolcoation
     % extraction and alignment with flight data. 
+    % 
+    % Parameter: filePath: path to directory containing .mat audio files.
     
     fileNameStruct = dir(fullfile(filePath, '*_audio_trial_*.mat'));
     fname = fileNameStruct(1).name;
@@ -85,7 +87,7 @@ function [] = HumanBat_audio_concat(filePath)
                     if ttlProcessFlag==1
                         save(strcat('ttlConCat_segment_',num2str(TTL_break_counter)),'ttlConCat','-v7.3');
                     end
-                    clear audioConCat ttlConCat audioConCat_segment ttlConCat_segment;
+                    %clear audioConCat ttlConCat audioConCat_segment ttlConCat_segment;
                     TTL_break_counter = TTL_break_counter+1;
     
                     % Re-initialize matrixes
@@ -124,7 +126,7 @@ function [] = HumanBat_audio_concat(filePath)
                     if ttlProcessFlag==1
                         save(strcat('ttlConCat_segment_',num2str(TTL_break_counter)),'ttlConCat','-v7.3');
                     end
-                    clear audioConCat ttlConCat audioConCat_segment ttlConCat_segment;
+                    %clear audioConCat ttlConCat audioConCat_segment ttlConCat_segment;
                     TTL_break_counter = TTL_break_counter+1;
     
                     % Re-initialize matrixes
@@ -243,6 +245,8 @@ function [] = HumanBat_audio_concat(filePath)
             disp("End")
         end
     end
+    
+    % Decimate audio data
     
     % Pass the concatenated data to 
     % [out, metrics] = ImBat_MCS_alignTimeStamps(audio,video,TS,Markers,mic_data)
