@@ -12,6 +12,8 @@ import pickle
 from distutils import dir_util
 import getopt, sys
 import luigi.tools.deps_tree as deps_tree
+
+from utils import rclone
 #from HumanBat import process_motu, process_arduino, process_ephys, process_video, b151_tests, DockerTask
 #from process_b149f import *
 #from HumanBat.qbats.utils import savemat73
@@ -20,12 +22,30 @@ class PullServerData(luigi.Task):
     """
     Pulls data from NAS servers for specified date(s)
     """
+    bat_id = luigi.Parameter()
     date = luigi.Parameter() # YYMMDD
-    server_path = luigi.Parameter() # Path to server root directory containing data from each day
-    local_path = luigi.Parameter() # Path to local root directory containing data from each day
+
+    #server_path = luigi.Parameter() # Path to server root directory containing data from each day
+    #local_path = luigi.Parameter() # Path to local root directory containing data from each day
 
     def output(self):
-        return luigi.LocalTarget(os.path.join(local_path,date))
+        script_dir = os.path.dirname(__file__)
+        with open(os.path.join(script_dir,'config.json'),'r') as f:
+            config = json.load(f)
+
+        server_path = config['remote_data_path']
+        self.server_path = os.path.join(server_path,'{}/raw/{}'.format(self.bat_id, self.date))
+
+        local_path = config['local_data_path']
+        self.local_path = os.path.join(local_path,'{}/raw/{}'.format(self.bat_id, self.date))
+
+        rclone.check(self.server_path, self.local_path)
+
+        return luigi.LocalTarget(self.local_path)
+
+    def run(self):
+        rclone.copy(self.server_path, self.local_path)
+        rclone.check(self.server_path, self.local_path)
 
 """
 class B151CheckDataIntegrity(luigi.Task):

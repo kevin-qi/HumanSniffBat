@@ -1,27 +1,32 @@
 import luigi
 import os
 import getopt, sys
-import luigi.tools.deps_tree as deps_tree
-from process_sniffbat import *
+#import luigi.tools.deps_tree as deps_tree
+from pipeline.rclone_tasks import *
+from pipeline.audio_tasks import *
 
 if __name__ == '__main__':
 
-    options, args = getopt.getopt(sys.argv[1:], "", ['local-scheduler', 'bat_id', 'date='])
-    options = dict(option
+    options, args = getopt.getopt(sys.argv[1:], "", ['local-scheduler', 'bat-id=', 'date='])
+    options = dict(options)
 
-    data_path = options['--data-path']
-    assert os.path.isdir(data_path), "{} is not a valid directory".format(data_path)
+    bat_id = options['--bat-id']
+    date = options['--date']
 
-    skip_completed = bool(options['--skip-completed'])
-    assert type(skip_completed) == type(True), "{} is not a bool".format(skip_completed)
+    #data_path = options['--data-path']
+    #assert os.path.isdir(data_path), "{} is not a valid directory".format(data_path)
+
+    #skip_completed = bool(options['--skip-completed'])
+    #assert type(skip_completed) == type(True), "{} is not a bool".format(skip_completed)
 
     local_path = './data/{}/raw/{}'.format(bat_id, date)
     server_path = ''
 
     #luigi.build([B149fDownsampleEphysData(data_path),B149fKilosortEphysData(data_path)])
+    data_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),'data/{}/raw/{}'.format(bat_id, date))
 
-
-    luigi.build([PullServerData()],
+    luigi.build([PullServerData(bat_id, date),
+                 ConcatAudio(data_path)],
                   workers=8,
                   log_level='INFO')
 
