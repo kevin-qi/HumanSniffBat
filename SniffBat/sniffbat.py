@@ -25,8 +25,9 @@ if __name__ == '__main__':
     #luigi.build([B149fDownsampleEphysData(data_path),B149fKilosortEphysData(data_path)])
     data_path = os.path.join(os.path.dirname(os.path.realpath(__file__)),'data/{}/raw/{}'.format(bat_id, date))
 
-    luigi.build([PullServerData(bat_id, date),
-                 ConcatAudio(data_path)],
+    luigi.build([PullServerData(bat_id, date, data_path),
+                 ConcatAudio(bat_id, date, data_path),
+                 PushServerData(bat_id, date, data_path)],
                   workers=8,
                   log_level='INFO')
 
