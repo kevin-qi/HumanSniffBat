@@ -12,6 +12,7 @@ import pickle
 from distutils import dir_util
 import getopt, sys
 import luigi.tools.deps_tree as deps_tree
+from pipeline.audio_tasks import *
 
 from utils import rclone
 #from HumanBat import process_motu, process_arduino, process_ephys, process_video, b151_tests, DockerTask
@@ -20,10 +21,13 @@ from utils import rclone
 
 class PullServerData(luigi.Task):
     """
-    Pulls data from NAS servers for specified date(s)
+    Pulls data from NAS servers for specified date
+
+    Pulls both raw/ and processed/ for specified date
     """
     bat_id = luigi.Parameter()
     date = luigi.Parameter() # YYMMDD
+    data_path = luigi.Parameter()
 
     #server_path = luigi.Parameter() # Path to server root directory containing data from each day
     #local_path = luigi.Parameter() # Path to local root directory containing data from each day
@@ -44,8 +48,45 @@ class PullServerData(luigi.Task):
         return luigi.LocalTarget(self.local_path)
 
     def run(self):
+        print("\n\nPulling raw data for bat {} from {}\n".format(self.bat_id, self.date))
         rclone.copy(self.server_path, self.local_path)
-        rclone.check(self.server_path, self.local_path)
+        print("\n\nPulling processed data for bat {} from {}\n".format(self.bat_id, self.date))
+        rclone.copy(self.server_path.replace('raw','processed'), self.local_path.replace('raw','processed'))
+
+class PushServerData(luigi.Task):
+    """
+    Pushes data to NAS servers for specified date(s)
+
+    Pushes processed/ folder only (rclone copy command, never deletes any files so it is safe)
+    """
+    bat_id = luigi.Parameter()
+    date = luigi.Parameter() # YYMMDD
+    data_path = luigi.Parameter()
+
+    #server_path = luigi.Parameter() # Path to server root directory containing data from each day
+    #local_path = luigi.Parameter() # Path to local root directory containing data from each day
+
+    def requires(self):
+        return [PullServerData(self.bat_id, self.date, self.data_path),
+                ConcatAudio(self.bat_id, self.date, self.data_path)]
+
+    def output(self):
+        script_dir = os.path.dirname(__file__)
+        with open(os.path.join(script_dir,'config.json'),'r') as f:
+            config = json.load(f)
+
+        server_path = config['remote_data_path']
+        self.server_path = os.path.join(server_path,'{}/processed/{}'.format(self.bat_id, self.date))
+
+        local_path = config['local_data_path']
+        self.local_path = os.path.join(local_path,'{}/processed/{}'.format(self.bat_id, self.date))
+
+        rclone.check(self.local_path,self.server_path)
+
+        return None
+
+    def run(self):
+        rclone.copy(self.local_path, self.server_path)
 
 """
 class B151CheckDataIntegrity(luigi.Task):
