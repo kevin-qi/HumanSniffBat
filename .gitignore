@@ -13,6 +13,9 @@ HumanBat/__pycache__
 HumanBat.egg-info/
 HumanBat/DockerTask.py
 HumanBat/HumanBat_DLC
+**/*/config.json
+**/*.egg-info
+**/data/
 build/
 dist/
 **/*.asv
