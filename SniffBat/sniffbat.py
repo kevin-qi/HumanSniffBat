@@ -4,6 +4,7 @@ import getopt, sys
 #import luigi.tools.deps_tree as deps_tree
 from pipeline.rclone_tasks import *
 from pipeline.audio_tasks import *
+from pipeline.video_tasks import *
 
 if __name__ == '__main__':
 
@@ -27,7 +28,8 @@ if __name__ == '__main__':
 
     luigi.build([PullServerData(bat_id, date, data_path),
                  ConcatAudio(bat_id, date, data_path),
-                 PushServerData(bat_id, date, data_path)],
+                 PushServerData(bat_id, date, data_path),
+                 StackVideos(bat_id, date, data_path)],
                   workers=8,
                   log_level='INFO')
 

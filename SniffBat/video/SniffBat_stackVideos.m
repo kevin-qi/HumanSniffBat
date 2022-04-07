@@ -1,6 +1,6 @@
 function [] = stackVideos(data_path, bat_id, date)
-%STACKCAMERAS Summary of this function goes here
-%   data_path : dir containing camera folders containing .mp4 file. 
+%STACKCAMERAS Stack videos into grid and save to processed/ folder
+%   data_path : dir containing camera folders containing .mp4 file.
 
 dir(data_path)
 stack_grid = {'left','right', 'front', 'bottom'};
@@ -33,4 +33,3 @@ disp(cmd)
 system(cmd);
 
 end
-
