@@ -12,10 +12,11 @@ import pickle
 from distutils import dir_util
 import getopt, sys
 import luigi.tools.deps_tree as deps_tree
+import pipeline.rclone_tasks as rclone_tasks
 from pipeline.rclone_tasks import *
 from utils.utils import PyMatlab
 
-class ConcatAudio(luigi.Task):
+class StackVideos(luigi.Task):
     """
     Concatenate audio
     """
@@ -28,13 +29,13 @@ class ConcatAudio(luigi.Task):
     #local_path = luigi.Parameter() # Path to local root directory containing data from each day
 
     def requires(self):
-        return [PullServerData(self.bat_id, self.date, self.data_path)]
+        return [rclone_tasks.PullServerData(self.bat_id, self.date, self.data_path)]
 
     def output(self):
-        self.in_path = os.path.join(self.data_path, 'audio')
+        self.in_path = os.path.join(self.data_path, 'cameras')
         out_path = self.in_path.replace('raw', 'processed')
         Path(out_path).mkdir(parents=True, exist_ok=True)
-        self.out_path = os.path.join(out_path,'1920', 'audioCh_1.mat')
+        self.out_path = os.path.join(out_path,'{}_{}_stacked.mp4'.format(self.bat_id, self.date))
 
         return luigi.LocalTarget(self.out_path)
 
@@ -42,5 +43,5 @@ class ConcatAudio(luigi.Task):
         SniffBatPath = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
         pyMatlab = PyMatlab(SniffBatPath)
         print(SniffBatPath)
-        print("Concatenating audio... ")
-        pyMatlab.eng.SniffBat_parConcatAudio(self.in_path, nargout=0)
+        print("Stacking videos ")
+        pyMatlab.eng.SniffBat_stackVideos(self.in_path, self.bat_id, self.date, nargout=0)

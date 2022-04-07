@@ -13,7 +13,7 @@ from distutils import dir_util
 import getopt, sys
 import luigi.tools.deps_tree as deps_tree
 from pipeline.audio_tasks import *
-
+from pipeline.video_tasks import *
 from utils import rclone
 #from HumanBat import process_motu, process_arduino, process_ephys, process_video, b151_tests, DockerTask
 #from process_b149f import *
@@ -68,7 +68,8 @@ class PushServerData(luigi.Task):
 
     def requires(self):
         return [PullServerData(self.bat_id, self.date, self.data_path),
-                ConcatAudio(self.bat_id, self.date, self.data_path)]
+                ConcatAudio(self.bat_id, self.date, self.data_path),
+                StackVideos(self.bat_id, self.date, self.data_path)]
 
     def output(self):
         script_dir = os.path.dirname(__file__)
