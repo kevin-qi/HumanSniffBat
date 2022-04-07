@@ -35,7 +35,7 @@ for channel = 1:6
     end
     
     audioData = audioData(first_ttl_sample_ind:last_ttl_sample_ind);
-    save(fullfile(outPath,sprintf('%d/audioCh_%d.mat',fs,channel)), "audioData", "fs", "channel")
+    save(fullfile(outPath,sprintf('%d/audioCh_%d.mat',fs,channel)), "audioData", "fs", "channel",'-v7.3')
     audiowrite(fullfile(outPath,sprintf('%d/audioCh_%d.wav',fs,channel)),audioData,fs);
     audioData = decimate(double(audioData), 10);
     audioData = decimate(audioData, 10);
@@ -43,7 +43,7 @@ for channel = 1:6
     if(~exist(fullfile(outPath, num2str(fs))))
         mkdir(fullfile(outPath, num2str(fs)));
     end
-    save(fullfile(outPath,sprintf('%d/audioCh_%d.mat',fs,channel)), "audioData", "fs", "channel")
+    save(fullfile(outPath,sprintf('%d/audioCh_%d.mat',fs,channel)), "audioData", "fs", "channel",'-v7.3')
     audiowrite(fullfile(outPath,sprintf('%d/audioCh_%d.wav',fs,channel)),audioData,fs);
     toc
 end
