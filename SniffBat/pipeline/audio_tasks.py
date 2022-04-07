@@ -12,7 +12,7 @@ import pickle
 from distutils import dir_util
 import getopt, sys
 import luigi.tools.deps_tree as deps_tree
-from pipeline.rclone_tasks import *
+import pipeline.rclone_tasks as rclone_tasks
 from utils.utils import PyMatlab
 
 class ConcatAudio(luigi.Task):
@@ -28,7 +28,7 @@ class ConcatAudio(luigi.Task):
     #local_path = luigi.Parameter() # Path to local root directory containing data from each day
 
     def requires(self):
-        return [PullServerData(self.bat_id, self.date, self.data_path)]
+        return [rclone_tasks.PullServerData(self.bat_id, self.date, self.data_path)]
 
     def output(self):
         self.in_path = os.path.join(self.data_path, 'audio')

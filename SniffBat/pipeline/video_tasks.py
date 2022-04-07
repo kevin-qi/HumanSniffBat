@@ -44,4 +44,4 @@ class StackVideos(luigi.Task):
         pyMatlab = PyMatlab(SniffBatPath)
         print(SniffBatPath)
         print("Stacking videos ")
-        pyMatlab.eng.SniffBat_stackVideos(self.in_path, self.bat_id, self.date, nargout=0)
+        pyMatlab.eng.SniffBat_stackVideosAudio(self.in_path, self.bat_id, self.date, nargout=0)
