@@ -1,6 +1,0 @@
-# Exported using VGG Image Annotator (http://www.robots.ox.ac.uk/~vgg/software/via)
-# CSV_HEADER = metadata_id,file_list,temporal_segment_start,temporal_segment_end,metadata
-"1_gTzoyK1T","[""14650_220403_stacked.mp4""]",3286.0271,3522.5271,"{""Phase"":""0""}"
-"1_n8QXAAdK","[""14650_220403_stacked.mp4""]",3037.777,3286.7771,"{""Phase"":""5""}"
-"1_trjI8E5A","[""14650_220403_stacked.mp4""]",3041.893,3083.88855,"{""Activity_Subject"":""0""}"
-"1_VvbmHgrk","[""14650_220403_stacked.mp4""]",3092.26355,3097.88855,"{""Activity_Subject"":""0""}"
